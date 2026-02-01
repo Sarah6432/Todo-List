@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Main {
-    private static GerenciadorTarefa gerenciador = new GerenciadorTarefa();
+    private static GerenciadorTarefas gerenciador = new GerenciadorTarefas();
     private static Scanner scanner = new Scanner(System.in);
     private static DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -24,7 +24,7 @@ public class Main {
                     default -> System.out.println("Opção inválida.");
                 }
             } catch (Exception e) {
-                System.out.println("Erro na entrada. Certifique-se de usar o formato correto.");
+                System.out.println("Erro na entrada, certifique-se de usar o formato correto.");
             }
         }
     }

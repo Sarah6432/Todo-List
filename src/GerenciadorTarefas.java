@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GerenciadorTarefa {
+public class GerenciadorTarefas {
     private List<Tarefa> tarefas = new ArrayList<>();
 
     public void adicionar(Tarefa t) {

@@ -32,6 +32,6 @@ public class Tarefa {
     public String toString() {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         return String.format("Nome: %-15s | Prioridade: %d | Status: %-7s | Prazo: %s | Alarme: %s",
-                nome, prioridade, status, dataHora.format(fmt), (alarmeAtivo ? "ON" : "OFF"));
+                nome, prioridade, status, dataHora.format(fmt), (alarmeAtivo ? "on" : "off"));
     }
 }
