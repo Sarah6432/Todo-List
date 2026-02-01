@@ -1,29 +1,45 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GerenciadorTarefa {
     private List<Tarefa> tarefas = new ArrayList<>();
 
-    public void adicionarTarefa(Tarefa t) {
+    public void adicionar(Tarefa t) {
         tarefas.add(t);
-        // Rebalanceamento: Prioridade 5 (maior) fica no topo
+        rebalancear();
+    }
+
+    private void rebalancear() {
         tarefas.sort(Comparator.comparingInt(Tarefa::getPrioridade).reversed());
     }
 
-    public void removerTarefa(String nome) {
-        tarefas.removeIf(t -> t.getNome().equalsIgnoreCase(nome));
+    public boolean remover(String nome) {
+        return tarefas.removeIf(t -> t.getNome().equalsIgnoreCase(nome));
     }
 
-    public List<Tarefa> listarTodas() { return tarefas; }
-
-    // Filtros
-    public List<Tarefa> filtrarPorCategoria(String cat) {
-        return tarefas.stream().filter(t -> t.getCategoria().equalsIgnoreCase(cat)).collect(Collectors.toList());
+    public List<Tarefa> getTarefas() {
+        return tarefas;
     }
 
-    public List<Tarefa> filtrarPorStatus(String status) {
-        return tarefas.stream().filter(t -> t.getStatus().equalsIgnoreCase(status)).collect(Collectors.toList());
+    public List<Tarefa> verificarAlarmes() {
+        LocalDateTime agora = LocalDateTime.now();
+        return tarefas.stream()
+                .filter(t -> t.isAlarmeAtivo() && !t.getStatus().equalsIgnoreCase("done"))
+                .filter(t -> {
+                    Duration d = Duration.between(agora, t.getDataHora());
+                    return !d.isNegative() && d.toHours() < 2;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Tarefa> filtrar(int tipo, String busca) {
+        return switch (tipo) {
+            case 1 -> tarefas.stream().filter(t -> t.getCategoria().equalsIgnoreCase(busca)).toList();
+            case 2 -> tarefas.stream().filter(t -> t.getStatus().equalsIgnoreCase(busca)).toList();
+            case 3 -> tarefas.stream().filter(t -> String.valueOf(t.getPrioridade()).equals(busca)).toList();
+            default -> tarefas;
+        };
     }
 }

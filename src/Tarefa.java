@@ -1,31 +1,37 @@
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Tarefa {
     private String nome;
     private String descricao;
-    private LocalDate dataTermino;
+    private LocalDateTime dataHora;
     private int prioridade;
     private String categoria;
     private String status;
+    private boolean alarmeAtivo;
 
-    public Tarefa(String nome, String descricao, LocalDate dataTermino, int prioridade, String categoria, String status) {
+    public Tarefa(String nome, String descricao, LocalDateTime dataHora, int prioridade, String categoria, String status, boolean alarmeAtivo) {
         this.nome = nome;
         this.descricao = descricao;
-        this.dataTermino = dataTermino;
+        this.dataHora = dataHora;
         this.prioridade = prioridade;
         this.categoria = categoria;
         this.status = status;
+        this.alarmeAtivo = alarmeAtivo;
     }
 
-    // Getters para filtros e exibição
+    // Getters
     public String getNome() { return nome; }
     public int getPrioridade() { return prioridade; }
     public String getCategoria() { return categoria; }
     public String getStatus() { return status; }
+    public LocalDateTime getDataHora() { return dataHora; }
+    public boolean isAlarmeAtivo() { return alarmeAtivo; }
 
     @Override
     public String toString() {
-        return String.format("Nome: %-15s | Prioridade: %d | Status: %-8s | Fim: %s | Cat: %s",
-                nome, prioridade, status, dataTermino, categoria);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return String.format("Nome: %-15s | Prioridade: %d | Status: %-7s | Prazo: %s | Alarme: %s",
+                nome, prioridade, status, dataHora.format(fmt), (alarmeAtivo ? "ON" : "OFF"));
     }
 }

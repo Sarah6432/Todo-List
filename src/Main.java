@@ -1,97 +1,82 @@
 import java.util.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Main {
-    private static List<Tarefa> listaTarefas = new ArrayList<>();
+    private static GerenciadorTarefa gerenciador = new GerenciadorTarefa();
     private static Scanner scanner = new Scanner(System.in);
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public static void main(String[] args) {
-        int opcao = 0;
-        do {
+        dispararAlarmesIniciais();
+
+        int opcao = -1;
+        while (opcao != 0) {
             exibirMenu();
             try {
                 opcao = Integer.parseInt(scanner.nextLine());
                 switch (opcao) {
-                    case 1 -> adicionarTarefa();
-                    case 2 -> listarTarefas(listaTarefas);
-                    case 3 -> removerTarefa();
-                    case 4 -> filtrarTarefas();
-                    case 0 -> System.out.println("Encerrando aplicação...");
-                    default -> System.out.println("Opção inválida!");
+                    case 1 -> cadastrar();
+                    case 2 -> listar(gerenciador.getTarefas());
+                    case 3 -> deletar();
+                    case 4 -> filtrar();
+                    case 0 -> System.out.println("Saindo...");
+                    default -> System.out.println("Opção inválida.");
                 }
             } catch (Exception e) {
-                System.out.println("Erro: Entrada inválida.");
+                System.out.println("Erro na entrada. Certifique-se de usar o formato correto.");
             }
-        } while (opcao != 0);
+        }
+    }
+
+    private static void dispararAlarmesIniciais() {
+        List<Tarefa> proximas = gerenciador.verificarAlarmes();
+        if (!proximas.isEmpty()) {
+            System.out.println("\n🔔 --- ALARMES ATIVOS (Tarefas próximas do fim) ---");
+            proximas.forEach(t -> System.out.println("AVISO: A tarefa '" + t.getNome() + "' expira em menos de 2 horas!"));
+            System.out.println("---------------------------------------------------\n");
+        }
     }
 
     private static void exibirMenu() {
-        System.out.println("\n=== ZG-HERO TODO LIST ===");
-        System.out.println("1. Criar Tarefa");
-        System.out.println("2. Listar Tudo");
-        System.out.println("3. Remover Tarefa");
-        System.out.println("4. Filtrar por Categoria/Prioridade/Status");
-        System.out.println("0. Sair");
+        System.out.println("1. Nova Tarefa | 2. Listar Tudo | 3. Remover | 4. Filtrar | 0. Sair");
         System.out.print("Escolha: ");
     }
 
-    private static void adicionarTarefa() {
-        System.out.print("Nome: "); String nome = scanner.nextLine();
-        System.out.print("Descrição: "); String desc = scanner.nextLine();
-        System.out.print("Data Término (dd/mm/aaaa): ");
-        LocalDate data = LocalDate.parse(scanner.nextLine(), formatter);
-        System.out.print("Prioridade (1-5): "); int prio = Integer.parseInt(scanner.nextLine());
-        System.out.print("Categoria: "); String cat = scanner.nextLine();
-        System.out.print("Status (todo, doing, done): "); String status = scanner.nextLine();
+    private static void cadastrar() {
+        try {
+            System.out.print("Nome: "); String nome = scanner.nextLine();
+            System.out.print("Descrição: "); String desc = scanner.nextLine();
+            System.out.print("Data/Hora (dd/MM/yyyy HH:mm): ");
+            LocalDateTime dh = LocalDateTime.parse(scanner.nextLine(), fmt);
+            System.out.print("Prioridade (1-5): "); int prio = Integer.parseInt(scanner.nextLine());
+            System.out.print("Categoria: "); String cat = scanner.nextLine();
+            System.out.print("Status (todo/doing/done): "); String status = scanner.nextLine();
+            System.out.print("Ativar Alarme? (s/n): "); boolean alarme = scanner.nextLine().equalsIgnoreCase("s");
 
-        Tarefa nova = new Tarefa(nome, desc, data, prio, cat, status);
-        listaTarefas.add(nova);
-
-
-        listaTarefas.sort(Comparator.comparingInt(Tarefa::getPrioridade).reversed());
-        System.out.println("Tarefa adicionada e lista rebalanceada!");
-    }
-
-
-    private static void listarTarefas(List<Tarefa> lista) {
-        if (lista.isEmpty()) {
-            System.out.println("Nenhuma tarefa encontrada.");
-        } else {
-            System.out.println("\n--- Lista de Atividades ---");
-            lista.forEach(System.out::println);
+            gerenciador.adicionar(new Tarefa(nome, desc, dh, prio, cat, status, alarme));
+            System.out.println("Sucesso! Lista rebalanceada por prioridade.");
+        } catch (Exception e) {
+            System.out.println("Erro ao cadastrar. Verifique o formato da data/hora.");
         }
     }
 
-
-    private static void removerTarefa() {
-        System.out.print("Digite o nome exato da tarefa para remover: ");
-        String nome = scanner.nextLine();
-        boolean removido = listaTarefas.removeIf(t -> t.getNome().equalsIgnoreCase(nome));
-        if (removido) System.out.println("Tarefa removida com sucesso!");
-        else System.out.println("Tarefa não encontrada.");
+    private static void listar(List<Tarefa> lista) {
+        if (lista.isEmpty()) System.out.println("Vazio.");
+        else lista.forEach(System.out::println);
     }
 
+    private static void deletar() {
+        System.out.print("Nome da tarefa para remover: ");
+        if (gerenciador.remover(scanner.nextLine())) System.out.println("Removida.");
+        else System.out.println("Não encontrada.");
+    }
 
-    private static void filtrarTarefas() {
-        System.out.println("Filtrar por: 1. Categoria | 2. Prioridade | 3. Status");
-        int f = Integer.parseInt(scanner.nextLine());
-        List<Tarefa> filtrada = new ArrayList<>();
-
-        if (f == 1) {
-            System.out.print("Digite a categoria: ");
-            String busca = scanner.nextLine();
-            filtrada = listaTarefas.stream().filter(t -> t.getCategoria().equalsIgnoreCase(busca)).toList();
-        } else if (f == 2) {
-            System.out.print("Digite a prioridade (1-5): ");
-            int busca = Integer.parseInt(scanner.nextLine());
-            filtrada = listaTarefas.stream().filter(t -> t.getPrioridade() == busca).toList();
-        } else if (f == 3) {
-            System.out.print("Digite o status: ");
-            String busca = scanner.nextLine();
-            filtrada = listaTarefas.stream().filter(t -> t.getStatus().equalsIgnoreCase(busca)).toList();
-        }
-        listarTarefas(filtrada);
+    private static void filtrar() {
+        System.out.println("Filtrar por: 1. Categoria | 2. Status | 3. Prioridade");
+        int tipo = Integer.parseInt(scanner.nextLine());
+        System.out.print("Busca: ");
+        String busca = scanner.nextLine();
+        listar(gerenciador.filtrar(tipo, busca));
     }
 }
