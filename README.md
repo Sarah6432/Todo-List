@@ -19,6 +19,27 @@ O projeto atende aos seguintes requisitos obrigatórios:
 
     Menu Interativo: Interface via terminal simples e intuitiva.
 
+ 🔔 Nova Atualização: Sistema de Alarmes (Challenge K1-T3)
+
+A aplicação agora conta com um sistema de notificações inteligente para auxiliar na gestão de prazos críticos
+📋 Novos Requisitos Implementados:
+
+    Suporte a Horários Precisos: Substituição de LocalDate por LocalDateTime, permitindo configurar não apenas o dia, mas a hora exata do término da tarefa.
+
+    Configuração de Alarme: Durante a criação de uma tarefa, o usuário pode optar por ativar ou desativar o alarme.
+
+    Acionamento Automático: Ao iniciar a aplicação, o sistema realiza uma varredura automática em todas as tarefas pendentes.
+
+    Lógica de Antecedência: O alarme é disparado para qualquer tarefa que esteja configurada com alarme ativo e que tenha o prazo de término nas próximas 2 horas a partir do momento atual.
+
+⚙️ Detalhes Técnicos da Solução:
+
+    Cálculo de Intervalo: Utilização da classe java.time.Duration para calcular a diferença exata entre o horário do sistema e o horário da tarefa.
+
+    Verificação de Status: O alarme ignora tarefas marcadas como Done, focando apenas no que ainda precisa ser realizado (ToDo e Doing).
+
+    User Experience (Terminal): O aviso é exibido em destaque logo na primeira tela do programa, garantindo que o usuário veja as notificações antes de interagir com o menu.
+
 🛠️ Tecnologias Utilizadas
 
     Java 21
