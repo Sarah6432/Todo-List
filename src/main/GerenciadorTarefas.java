@@ -1,11 +1,12 @@
 package main;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class GerenciadorTarefas {
     private List<Tarefa> tarefas = new ArrayList<>();
+    private Set<String> alarmesDisparados = new HashSet<>();
 
     public void adicionar(Tarefa t) {
         tarefas.add(t);
@@ -24,15 +25,33 @@ public class GerenciadorTarefas {
         return tarefas;
     }
 
-    public List<Tarefa> verificarAlarmes() {
-        LocalDateTime agora = LocalDateTime.now();
-        return tarefas.stream()
-                .filter(t -> t.isAlarmeAtivo() && !t.getStatus().equalsIgnoreCase("done"))
-                .filter(t -> {
-                    Duration d = Duration.between(agora, t.getDataHora());
-                    return !d.isNegative() && d.toHours() < 2;
-                })
-                .collect(Collectors.toList());
+    public void iniciarMonitoramento() {
+        Thread threadAlarme = new Thread(() -> {
+            while (true) {
+                LocalDateTime agora = LocalDateTime.now();
+                for (Tarefa t : tarefas) {
+                    if (!t.getStatus().equalsIgnoreCase("done")) {
+                        long minutosRestantes = Duration.between(agora, t.getDataHora()).toMinutes();
+
+                        for (Integer antecedencia : t.getAlarmesMinutos()) {
+                            String chaveAlarme = t.getNome() + "_" + antecedencia;
+
+                            if (minutosRestantes <= antecedencia && minutosRestantes > 0 && !alarmesDisparados.contains(chaveAlarme)) {
+                                System.out.println("\n[ALERTA] A tarefa '" + t.getNome() + "' expira em " + minutosRestantes + " minutos!");
+                                alarmesDisparados.add(chaveAlarme);
+                            }
+                        }
+                    }
+                }
+                try {
+                    Thread.sleep(30000);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        });
+        threadAlarme.setDaemon(true);
+        threadAlarme.start();
     }
 
     public List<Tarefa> filtrar(int tipo, String busca) {
@@ -43,14 +62,15 @@ public class GerenciadorTarefas {
             default -> tarefas;
         };
     }
-    public boolean editar(String nome, String novaDesc, int novaPrio, String novaCat, String novoStatus, boolean novoAlarme) {
+
+    public boolean editar(String nome, String novaDesc, int novaPrio, String novaCat, String novoStatus, List<Integer> novosAlarmes) {
         for (Tarefa t : tarefas) {
             if (t.getNome().equalsIgnoreCase(nome)) {
                 t.setDescricao(novaDesc);
                 t.setPrioridade(novaPrio);
                 t.setCategoria(novaCat);
                 t.setStatus(novoStatus);
-                t.setAlarmeAtivo(novoAlarme);
+                t.setAlarmesMinutos(novosAlarmes);
                 rebalancear();
                 return true;
             }

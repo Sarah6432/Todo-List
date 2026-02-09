@@ -10,7 +10,7 @@ public class Main {
     private static DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public static void main(String[] args) {
-        dispararAlarmesIniciais();
+        gerenciador.iniciarMonitoramento();
 
         int opcao = -1;
         while (opcao != 0) {
@@ -26,21 +26,13 @@ public class Main {
                     default -> System.out.println("Opção inválida.");
                 }
             } catch (Exception e) {
-                System.out.println("Erro na entrada, certifique-se de usar o formato correto.");
+                System.out.println("Erro na entrada: " + e.getMessage());
             }
         }
     }
 
-    private static void dispararAlarmesIniciais() {
-        List<Tarefa> proximas = gerenciador.verificarAlarmes();
-        if (!proximas.isEmpty()) {
-            System.out.println("\n ALARMES ATIVOS");
-            proximas.forEach(t -> System.out.println("AVISO: A tarefa '" + t.getNome() + "' expira em menos de 2 horas!"));
-        }
-    }
-
     private static void exibirMenu() {
-        System.out.println("1. Nova Tarefa | 2. Listar Tudo | 3. Remover | 4. Filtrar | 0. Sair");
+        System.out.println("\n1. Nova Tarefa | 2. Listar Tudo | 3. Remover | 4. Filtrar | 0. Sair");
         System.out.print("Escolha: ");
     }
 
@@ -53,12 +45,20 @@ public class Main {
             System.out.print("Prioridade (1-5): "); int prio = Integer.parseInt(scanner.nextLine());
             System.out.print("Categoria: "); String cat = scanner.nextLine();
             System.out.print("Status (todo/doing/done): "); String status = scanner.nextLine();
-            System.out.print("Ativar Alarme? (s/n): "); boolean alarme = scanner.nextLine().equalsIgnoreCase("s");
 
-            gerenciador.adicionar(new Tarefa(nome, desc, dh, prio, cat, status, alarme));
+            System.out.print("Antecedência dos alarmes em minutos (ex: 10, 15, 20 ou 0 para nenhum): ");
+            String inputAlarmes = scanner.nextLine();
+            List<Integer> alarmes = new ArrayList<>();
+            if (!inputAlarmes.equals("0")) {
+                for (String s : inputAlarmes.split(",")) {
+                    alarmes.add(Integer.parseInt(s.trim()));
+                }
+            }
+
+            gerenciador.adicionar(new Tarefa(nome, desc, dh, prio, cat, status, alarmes));
             System.out.println("Sucesso! Lista rebalanceada por prioridade.");
         } catch (Exception e) {
-            System.out.println("Erro ao cadastrar. Verifique o formato da data/hora.");
+            System.out.println("Erro ao cadastrar. Verifique os formatos de data e números.");
         }
     }
 
@@ -74,10 +74,14 @@ public class Main {
     }
 
     private static void filtrar() {
-        System.out.println("Filtrar por: 1. Categoria | 2. Status | 3. Prioridade");
-        int tipo = Integer.parseInt(scanner.nextLine());
-        System.out.print("Busca: ");
-        String busca = scanner.nextLine();
-        listar(gerenciador.filtrar(tipo, busca));
+        try {
+            System.out.println("Filtrar por: 1. Categoria | 2. Status | 3. Prioridade");
+            int tipo = Integer.parseInt(scanner.nextLine());
+            System.out.print("Busca: ");
+            String busca = scanner.nextLine();
+            listar(gerenciador.filtrar(tipo, busca));
+        } catch (Exception e) {
+            System.out.println("Entrada inválida para filtro.");
+        }
     }
 }
