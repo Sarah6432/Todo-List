@@ -1,9 +1,7 @@
 📝 ZG-Hero: TODO List Java
 
 Este projeto é uma aplicação de gerenciamento de tarefas (Backend) desenvolvida como parte da trilha K1-T3 do programa Acelera ZG. A aplicação permite o gerenciamento completo de tarefas através do terminal, com foco em lógica de priorização e organização por categorias.
-👤 Autor
-
-    Sarah Silva Lima
+👤 Sarah Silva Lima
 
 🚀 Funcionalidades (MVP)
 
@@ -31,7 +29,24 @@ A aplicação agora conta com um sistema de notificações inteligente para auxi
     Acionamento Automático: Ao iniciar a aplicação, o sistema realiza uma varredura automática em todas as tarefas pendentes.
 
     Lógica de Antecedência: O alarme é disparado para qualquer tarefa que esteja configurada com alarme ativo e que tenha o prazo de término nas próximas 2 horas a partir do momento atual.
+    
+Nova Atualização:
+- **Testes Unitários:** Implementação de testes automatizados utilizando JUnit 5 para garantir a qualidade do CRUD.
+- **Metodologia TDD:** O recurso de edição foi desenvolvido seguindo o conceito de "Testes Primeiro".
+- **Padrão Given/When/Then:** Testes estruturados para melhor legibilidade do comportamento esperado.
 
+## 🧪 Como Executar os Testes
+
+Para garantir que todas as funcionalidades (Criar, Listar, Editar e Remover) estão operando corretamente:
+
+1. **Via IDE (VS Code / IntelliJ):**
+   - Navegue até a pasta `src/Test/main/`.
+   - Clique com o botão direito no arquivo `GerenciadorTarefasTest.java`.
+   - Selecione **"Run Test"**.
+
+2. **Via Terminal (Maven):**
+   ```bash
+   mvn test
 ⚙️ Detalhes Técnicos da Solução:
 
     Cálculo de Intervalo: Utilização da classe java.time.Duration para calcular a diferença exata entre o horário do sistema e o horário da tarefa.
