@@ -1,10 +1,12 @@
+package main;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Tarefa {
-    private String nome;
+    private final String nome;
     private String descricao;
-    private LocalDateTime dataHora;
+    private final LocalDateTime dataHora;
     private int prioridade;
     private String categoria;
     private String status;
@@ -20,13 +22,19 @@ public class Tarefa {
         this.alarmeAtivo = alarmeAtivo;
     }
 
-    // Getters
     public String getNome() { return nome; }
     public int getPrioridade() { return prioridade; }
     public String getCategoria() { return categoria; }
     public String getStatus() { return status; }
+    public String getDescricao(){ return  descricao; }
     public LocalDateTime getDataHora() { return dataHora; }
     public boolean isAlarmeAtivo() { return alarmeAtivo; }
+
+    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public void setPrioridade(int prioridade) { this.prioridade = prioridade; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public void setStatus(String status) { this.status = status; }
+    public void setAlarmeAtivo(boolean alarmeAtivo) { this.alarmeAtivo = alarmeAtivo; }
 
     @Override
     public String toString() {

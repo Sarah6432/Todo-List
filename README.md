@@ -71,12 +71,12 @@ Passo a Passo
     Compile os arquivos Java:
     Bash
 
-    javac Main.java Tarefa.java
+    javac main.Main.java main.Tarefa.java
 
     Execute a aplicação:
     Bash
 
-    java Main
+    java main.Main
 
 🧠 Lógica de Rebalanceamento
 

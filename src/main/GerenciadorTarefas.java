@@ -1,3 +1,4 @@
+package main;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -41,5 +42,19 @@ public class GerenciadorTarefas {
             case 3 -> tarefas.stream().filter(t -> String.valueOf(t.getPrioridade()).equals(busca)).toList();
             default -> tarefas;
         };
+    }
+    public boolean editar(String nome, String novaDesc, int novaPrio, String novaCat, String novoStatus, boolean novoAlarme) {
+        for (Tarefa t : tarefas) {
+            if (t.getNome().equalsIgnoreCase(nome)) {
+                t.setDescricao(novaDesc);
+                t.setPrioridade(novaPrio);
+                t.setCategoria(novaCat);
+                t.setStatus(novoStatus);
+                t.setAlarmeAtivo(novoAlarme);
+                rebalancear();
+                return true;
+            }
+        }
+        return false;
     }
 }

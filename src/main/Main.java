@@ -1,3 +1,5 @@
+package main;
+
 import java.util.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,14 +34,13 @@ public class Main {
     private static void dispararAlarmesIniciais() {
         List<Tarefa> proximas = gerenciador.verificarAlarmes();
         if (!proximas.isEmpty()) {
-            System.out.println("\n🔔 --- ALARMES ATIVOS (Tarefas próximas do fim) ---");
+            System.out.println("\n ALARMES ATIVOS");
             proximas.forEach(t -> System.out.println("AVISO: A tarefa '" + t.getNome() + "' expira em menos de 2 horas!"));
-            System.out.println("---------------------------------------------------\n");
         }
     }
 
     private static void exibirMenu() {
-        System.out.println("1. Nova Tarefa | 2. Listar Tudo | 3. Remover | 4. Filtrar | 0. Sair");
+        System.out.println("1. Nova main.Tarefa | 2. Listar Tudo | 3. Remover | 4. Filtrar | 0. Sair");
         System.out.print("Escolha: ");
     }
 
