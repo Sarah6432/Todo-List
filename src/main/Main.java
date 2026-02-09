@@ -40,7 +40,7 @@ public class Main {
     }
 
     private static void exibirMenu() {
-        System.out.println("1. Nova main.Tarefa | 2. Listar Tudo | 3. Remover | 4. Filtrar | 0. Sair");
+        System.out.println("1. Nova Tarefa | 2. Listar Tudo | 3. Remover | 4. Filtrar | 0. Sair");
         System.out.print("Escolha: ");
     }
 
