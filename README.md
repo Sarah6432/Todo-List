@@ -35,6 +35,10 @@ Nova Atualização:
 - **Metodologia TDD:** O recurso de edição foi desenvolvido seguindo o conceito de "Testes Primeiro".
 - **Padrão Given/When/Then:** Testes estruturados para melhor legibilidade do comportamento esperado.
 
+Nova Atualização: Frontend
+--> o frontend está em html, css e javascript puros
+--> conta com as funcionalidades básicas do todolist como o crud e possui um ux/ui funcional e intuitivo com cores calmas
+
 ## 🧪 Como Executar os Testes
 
 Para garantir que todas as funcionalidades (Criar, Listar, Editar e Remover) estão operando corretamente:
