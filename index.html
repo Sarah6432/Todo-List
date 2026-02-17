@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZG Hero - Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gerenciador de Tarefas</h1>
+        </header>
+
+        <section class="card-form">
+            <h2 id="form-title">Nova Tarefa</h2>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                <div class="input-group">
+                    <input type="text" id="nome" placeholder="Nome da Tarefa" required>
+                    <input type="text" id="categoria" placeholder="Categoria (Ex: Estudos)" required>
+                </div>
+                <textarea id="descricao" placeholder="Descrição da tarefa..."></textarea>
+                <div class="input-group">
+                    <input type="datetime-local" id="dataHora" required>
+                    <select id="prioridade">
+                        <option value="1">Prioridade 1 (Baixa)</option>
+                        <option value="2">Prioridade 2</option>
+                        <option value="3">Prioridade 3</option>
+                        <option value="4">Prioridade 4</option>
+                        <option value="5">Prioridade 5 (Alta)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <select id="status">
+                        <option value="TODO">TODO</option>
+                        <option value="DOING">DOING</option>
+                        <option value="DONE">DONE</option>
+                    </select>
+                    <input type="text" id="alarmes" placeholder="Alarmes (ex: 10, 30)">
+                </div>
+                <button type="submit" id="btn-save">Salvar Tarefa</button>
+                <button type="button" id="btn-cancel" class="hidden">Cancelar Edição</button>
+            </form>
+        </section>
+
+        <section class="filters">
+            <button onclick="filtrarTarefas('ALL')" class="btn-filter active">Todas</button>
+            <button onclick="filtrarTarefas('TODO')" class="btn-filter">TODO</button>
+            <button onclick="filtrarTarefas('DOING')" class="btn-filter">DOING</button>
+            <button onclick="filtrarTarefas('DONE')" class="btn-filter">DONE</button>
+        </section>
+
+        <section class="task-list" id="task-container">
+            </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
