@@ -8,15 +8,52 @@ const taskContainer = document.getElementById('task-container');
 taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
+    const nome = document.getElementById('nome').value.trim();
+    const categoria = document.getElementById('categoria').value;
+    const descricao = document.getElementById('descricao').value.trim();
+    const dataHora = document.getElementById('dataHora').value;
+    const prioridade = document.getElementById('prioridade').value.trim();
+    const status = document.getElementById('status').value;
+    const alarmes = document.getElementById('alarmes').value;
+
+    const regexPrioridade = /^[1-5]$/;
+    
+    const regexData = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/;
+
+    if (!nome || !dataHora || !prioridade) {
+        alert("Por favor, preencha os campos obrigatórios.");
+        return;
+    }
+
+    if (!regexPrioridade.test(prioridade)) {
+        alert("Prioridade inválida! Insira um número de 1 a 5.");
+        return;
+    }
+
+    if (!regexData.test(dataHora)) {
+        alert("Formato de data inválido!");
+        return;
+    }
+
+    const dataInserida = new Date(dataHora);
+    const dataHoje = new Date();
+    dataHoje.setHours(0, 0, 0, 0);
+    dataInserida.setHours(0, 0, 0, 0);
+
+    if (dataInserida < dataHoje) {
+        alert("A data de término não pode ser menor que a atual!");
+        return;
+    }
+
     const tarefa = {
         id: editandoId || Date.now(),
-        nome: document.getElementById('nome').value,
-        categoria: document.getElementById('categoria').value,
-        descricao: document.getElementById('descricao').value,
-        dataHora: document.getElementById('dataHora').value,
-        prioridade: document.getElementById('prioridade').value,
-        status: document.getElementById('status').value,
-        alarmes: document.getElementById('alarmes').value
+        nome,
+        categoria,
+        descricao,
+        dataHora,
+        prioridade: parseInt(prioridade),
+        status,
+        alarmes
     };
 
     if (editandoId) {
@@ -46,7 +83,7 @@ function renderizar() {
             <div class="task-info">
                 <h3>${t.nome} <small>(${t.categoria})</small></h3>
                 <p>${t.descricao}</p>
-                <small>Prazo: ${t.dataHora} | Prioridade: ${t.prioridade} | Status: <strong>${t.status}</strong></small>
+                <small>Prazo: ${t.dataHora.replace('T', ' ')} | Prioridade: ${t.prioridade} | Status: <strong>${t.status}</strong></small>
             </div>
             <div class="task-actions">
                 <button class="btn-edit" onclick="prepararEdicao(${t.id})">Editar</button>
