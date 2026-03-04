@@ -83,7 +83,7 @@ function renderizar() {
             <div class="task-info">
                 <h3>${t.nome} <small>(${t.categoria})</small></h3>
                 <p>${t.descricao}</p>
-                <small>Prazo: ${t.dataHora.replace('T', ' ')} | Prioridade: ${t.prioridade} | Status: <strong>${t.status}</strong></small>
+                <small>Prazos: ${t.dataHora.replace('T', ' ')} | Prioridade: ${t.prioridade} | Status: <strong>${t.status}</strong></small>
             </div>
             <div class="task-actions">
                 <button class="btn-edit" onclick="prepararEdicao(${t.id})">Editar</button>
