@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZG Hero - Task Manager</title>
-    <link rel="stylesheet" href="style.css">
+    <title>ZG Hero - Todo List</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
     <div class="container">
@@ -18,9 +18,9 @@
                 <input type="hidden" id="task-id">
                 <div class="input-group">
                     <input type="text" id="nome" placeholder="Nome da Tarefa" required>
-                    <input type="text" id="categoria" placeholder="Categoria (Ex: Estudos)" required>
+                    <input type="text" id="categoria" placeholder="Categoria" required>
                 </div>
-                <textarea id="descricao" placeholder="Descrição da tarefa..."></textarea>
+                <textarea id="descricao" placeholder="Descrição"></textarea>
                 <div class="input-group">
                     <input type="datetime-local" id="dataHora" required>
                     <select id="prioridade">
@@ -37,23 +37,27 @@
                         <option value="DOING">DOING</option>
                         <option value="DONE">DONE</option>
                     </select>
-                    <input type="text" id="alarmes" placeholder="Alarmes (ex: 10, 30)">
+                    <input type="text" id="alarmes" placeholder="Alarmes em minutos (ex: 10, 30)">
                 </div>
                 <button type="submit" id="btn-save">Salvar Tarefa</button>
                 <button type="button" id="btn-cancel" class="hidden">Cancelar Edição</button>
             </form>
         </section>
 
-        <section class="filters">
-            <button onclick="filtrarTarefas('ALL')" class="btn-filter active">Todas</button>
-            <button onclick="filtrarTarefas('TODO')" class="btn-filter">TODO</button>
-            <button onclick="filtrarTarefas('DOING')" class="btn-filter">DOING</button>
-            <button onclick="filtrarTarefas('DONE')" class="btn-filter">DONE</button>
+        <section class="bulk-actions card-form">
+            <h3>Ações em Massa</h3>
+            <div class="input-group">
+                <select id="bulk-status">
+                    <option value="TODO">Mudar selecionados para TODO</option>
+                    <option value="DOING">Mudar selecionados para DOING</option>
+                    <option value="DONE">Mudar selecionados para DONE</option>
+                </select>
+                <button onclick="executarAcaoEmMassa()" id="btn-bulk" style="background: #06b6d4; color: white; cursor: pointer;">Executar</button>
+            </div>
         </section>
 
-        <section class="task-list" id="task-container">
-            </section>
+        <section class="task-list" id="task-container"></section>
     </div>
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
 </body>
 </html>

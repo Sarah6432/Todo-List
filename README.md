@@ -35,6 +35,21 @@ Nova Atualização:
 - **Metodologia TDD:** O recurso de edição foi desenvolvido seguindo o conceito de "Testes Primeiro".
 - **Padrão Given/When/Then:** Testes estruturados para melhor legibilidade do comportamento esperado.
 
+Nova Atualização: Frontend
+--> o frontend está em html, css e javascript puros
+--> conta com as funcionalidades básicas do todolist como o crud e possui um ux/ui funcional e intuitivo com cores calmas
+
+🚀 Novas Funcionalidades
+Nesta atualização, o projeto evoluiu de um CRUD básico para uma aplicação com persistência de dados e manipulação em lote:
+
+Persistência com LocalStorage: Todas as tarefas criadas, editadas ou excluídas são salvas automaticamente no localStorage do navegador. Isso garante que os dados do usuário não sejam perdidos ao atualizar a página ou fechar o navegador.
+
+Atualização de Status em Massa (Bulk Update): Implementação de uma nova funcionalidade que permite ao usuário selecionar múltiplas tarefas simultaneamente através de checkboxes. Após a seleção, é possível alterar o status de todos os itens marcados para TODO, DOING ou DONE com um único clique no botão "Executar".
+
+UX Aprimorada: A listagem agora conta com ordenação automática baseada no nível de prioridade (1 a 5), garantindo que as tarefas mais urgentes apareçam sempre no topo da lista.
+
+Feedback Visual: Adição de indicadores visuais para o status atual de cada tarefa e campos de formulário otimizados para dispositivos móveis e desktop.
+
 ## 🧪 Como Executar os Testes
 
 Para garantir que todas as funcionalidades (Criar, Listar, Editar e Remover) estão operando corretamente:
