@@ -1,9 +1,13 @@
-let tarefas = [];
-let filtroAtual = 'ALL';
+let tarefas = JSON.parse(localStorage.getItem('tarefas_zg')) || [];
 let editandoId = null;
 
 const taskForm = document.getElementById('task-form');
 const taskContainer = document.getElementById('task-container');
+
+function salvarNoStorage() {
+    localStorage.setItem('tarefas_zg', JSON.stringify(tarefas));
+    renderizar();
+}
 
 taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -12,7 +16,6 @@ taskForm.addEventListener('submit', (e) => {
     const categoria = document.getElementById('categoria').value;
     const descricao = document.getElementById('descricao').value.trim();
     const dataHora = document.getElementById('dataHora').value;
-<<<<<<< HEAD
     const prioridadeStr = document.getElementById('prioridade').value.trim();
     const status = document.getElementById('status').value;
     const alarmes = document.getElementById('alarmes').value;
@@ -28,48 +31,19 @@ taskForm.addEventListener('submit', (e) => {
 
     if (!regexPrioridade.test(prioridadeStr)) {
         alert("Prioridade inválida! Escolha um valor entre 1 e 5.");
-=======
-    const prioridade = document.getElementById('prioridade').value.trim();
-    const status = document.getElementById('status').value;
-    const alarmes = document.getElementById('alarmes').value;
-
-    const regexPrioridade = /^[1-5]$/;
-    
-    const regexData = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/;
-
-    if (!nome || !dataHora || !prioridade) {
-        alert("Por favor, preencha os campos obrigatórios.");
-        return;
-    }
-
-    if (!regexPrioridade.test(prioridade)) {
-        alert("Prioridade inválida! Insira um número de 1 a 5.");
->>>>>>> 16709304b850fd441410ab222490108eaea14e05
         return;
     }
 
     if (!regexData.test(dataHora)) {
-<<<<<<< HEAD
         alert("Por favor, selecione uma data e hora válidas.");
-=======
-        alert("Formato de data inválido!");
->>>>>>> 16709304b850fd441410ab222490108eaea14e05
         return;
     }
 
     const dataInserida = new Date(dataHora);
-<<<<<<< HEAD
     const agora = new Date();
     agora.setSeconds(0, 0);
 
     if (dataInserida < agora) {
-=======
-    const dataHoje = new Date();
-    dataHoje.setHours(0, 0, 0, 0);
-    dataInserida.setHours(0, 0, 0, 0);
-
-    if (dataInserida < dataHoje) {
->>>>>>> 16709304b850fd441410ab222490108eaea14e05
         alert("A data de término não pode ser menor que a atual!");
         return;
     }
@@ -80,11 +54,7 @@ taskForm.addEventListener('submit', (e) => {
         categoria,
         descricao,
         dataHora,
-<<<<<<< HEAD
         prioridade: parseInt(prioridadeStr),
-=======
-        prioridade: parseInt(prioridade),
->>>>>>> 16709304b850fd441410ab222490108eaea14e05
         status,
         alarmes
     };
@@ -99,36 +69,58 @@ taskForm.addEventListener('submit', (e) => {
     }
 
     taskForm.reset();
-    renderizar();
+    salvarNoStorage();
 });
+
+function executarAcaoEmMassa() {
+    const selecionados = document.querySelectorAll('.task-checkbox:checked');
+    const novoStatus = document.getElementById('bulk-status').value;
+
+    if (selecionados.length === 0) {
+        alert("Selecione ao menos uma tarefa!");
+        return;
+    }
+
+    const idsParaMudar = Array.from(selecionados).map(cb => parseInt(cb.dataset.id));
+
+    tarefas = tarefas.map(t => {
+        if (idsParaMudar.includes(t.id)) {
+            return { ...t, status: novoStatus };
+        }
+        return t;
+    });
+
+    salvarNoStorage();
+    alert("Status das tarefas selecionadas atualizado!");
+}
 
 function renderizar() {
     taskContainer.innerHTML = '';
+    
+    const listaOrdenada = [...tarefas].sort((a, b) => b.prioridade - a.prioridade);
 
-    const listaFiltrada = tarefas
-        .filter(t => filtroAtual === 'ALL' || t.status === filtroAtual)
-        .sort((a, b) => b.prioridade - a.prioridade);
-
-    listaFiltrada.forEach(t => {
+    listaOrdenada.forEach(t => {
         const div = document.createElement('div');
         div.className = 'task-card';
+        div.style.background = "#1e293b";
+        div.style.padding = "15px";
+        div.style.marginBottom = "10px";
+        div.style.borderRadius = "8px";
+        div.style.display = "flex";
+        div.style.alignItems = "center";
+        div.style.gap = "15px";
+        div.style.color = "white";
+
         div.innerHTML = `
-<<<<<<< HEAD
             <input type="checkbox" class="task-checkbox" data-id="${t.id}">
             <div style="flex-grow: 1;">
                 <h3 style="margin:0; color: #06b6d4;">${t.nome} <small style="color: #94a3b8;">(${t.status})</small></h3>
                 <p style="margin: 5px 0; font-size: 0.9rem;">${t.descricao}</p>
-                <small>${t.dataHora.replace('T', ' ')} | Prioridade: ${t.prioridade} | ${t.categoria}</small>
-=======
-            <div class="task-info">
-                <h3>${t.nome} <small>(${t.categoria})</small></h3>
-                <p>${t.descricao}</p>
-                <small>Prazos: ${t.dataHora.replace('T', ' ')} | Prioridade: ${t.prioridade} | Status: <strong>${t.status}</strong></small>
->>>>>>> 16709304b850fd441410ab222490108eaea14e05
+                <small>📅 ${t.dataHora.replace('T', ' ')} | ⭐ Prioridade: ${t.prioridade} | 📁 ${t.categoria}</small>
             </div>
-            <div class="task-actions">
-                <button class="btn-edit" onclick="prepararEdicao(${t.id})">Editar</button>
-                <button class="btn-delete" onclick="removerTarefa(${t.id})">Excluir</button>
+            <div>
+                <button onclick="prepararEdicao(${t.id})" style="background: #eab308; padding: 5px 10px; border-radius: 4px; border:none; cursor:pointer; margin-right: 5px;">Editar</button>
+                <button onclick="removerTarefa(${t.id})" style="background: #ef4444; padding: 5px 10px; border-radius: 4px; border:none; color:white; cursor:pointer;">Excluir</button>
             </div>
         `;
         taskContainer.appendChild(div);
@@ -136,8 +128,10 @@ function renderizar() {
 }
 
 function removerTarefa(id) {
-    tarefas = tarefas.filter(t => t.id !== id);
-    renderizar();
+    if(confirm("Deseja excluir esta tarefa?")) {
+        tarefas = tarefas.filter(t => t.id !== id);
+        salvarNoStorage();
+    }
 }
 
 function prepararEdicao(id) {
@@ -155,15 +149,7 @@ function prepararEdicao(id) {
     editandoId = id;
     document.getElementById('form-title').innerText = "Editando Tarefa";
     document.getElementById('btn-cancel').classList.remove('hidden');
-    window.scrollTo(0, 0);
-}
-
-function filtrarTarefas(status) {
-    filtroAtual = status;
-    document.querySelectorAll('.btn-filter').forEach(btn => {
-        btn.classList.toggle('active', btn.innerText.toUpperCase() === status || (status === 'ALL' && btn.innerText === 'Todas'));
-    });
-    renderizar();
+    window.scrollTo(0,0);
 }
 
 document.getElementById('btn-cancel').addEventListener('click', () => {
@@ -172,3 +158,5 @@ document.getElementById('btn-cancel').addEventListener('click', () => {
     document.getElementById('form-title').innerText = "Nova Tarefa";
     document.getElementById('btn-cancel').classList.add('hidden');
 });
+
+renderizar();
