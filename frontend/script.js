@@ -11,16 +11,52 @@ function salvarNoStorage() {
 
 taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    
+
+    const nome = document.getElementById('nome').value.trim();
+    const categoria = document.getElementById('categoria').value;
+    const descricao = document.getElementById('descricao').value.trim();
+    const dataHora = document.getElementById('dataHora').value;
+    const prioridadeStr = document.getElementById('prioridade').value.trim();
+    const status = document.getElementById('status').value;
+    const alarmes = document.getElementById('alarmes').value;
+
+    const regexNome = /^[A-Za-z0-9À-ÖØ-öø-ÿ\s]{3,}$/;
+    const regexPrioridade = /^[1-5]$/;
+    const regexData = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+
+    if (!regexNome.test(nome)) {
+        alert("O nome da tarefa deve ter pelo menos 3 caracteres e não conter símbolos especiais.");
+        return;
+    }
+
+    if (!regexPrioridade.test(prioridadeStr)) {
+        alert("Prioridade inválida! Escolha um valor entre 1 e 5.");
+        return;
+    }
+
+    if (!regexData.test(dataHora)) {
+        alert("Por favor, selecione uma data e hora válidas.");
+        return;
+    }
+
+    const dataInserida = new Date(dataHora);
+    const agora = new Date();
+    agora.setSeconds(0, 0);
+
+    if (dataInserida < agora) {
+        alert("A data de término não pode ser menor que a atual!");
+        return;
+    }
+
     const tarefa = {
         id: editandoId || Date.now(),
-        nome: document.getElementById('nome').value,
-        categoria: document.getElementById('categoria').value,
-        descricao: document.getElementById('descricao').value,
-        dataHora: document.getElementById('dataHora').value,
-        prioridade: parseInt(document.getElementById('prioridade').value),
-        status: document.getElementById('status').value,
-        alarmes: document.getElementById('alarmes').value
+        nome,
+        categoria,
+        descricao,
+        dataHora,
+        prioridade: parseInt(prioridadeStr),
+        status,
+        alarmes
     };
 
     if (editandoId) {
@@ -78,9 +114,9 @@ function renderizar() {
         div.innerHTML = `
             <input type="checkbox" class="task-checkbox" data-id="${t.id}">
             <div style="flex-grow: 1;">
-                <h3 style="margin:0; color: #06b6d4;">${t.nome} <small>(${t.status})</small></h3>
+                <h3 style="margin:0; color: #06b6d4;">${t.nome} <small style="color: #94a3b8;">(${t.status})</small></h3>
                 <p style="margin: 5px 0; font-size: 0.9rem;">${t.descricao}</p>
-                <small>Prioridade: ${t.prioridade} | Categoria: ${t.categoria}</small>
+                <small>${t.dataHora.replace('T', ' ')} | Prioridade: ${t.prioridade} | ${t.categoria}</small>
             </div>
             <div>
                 <button onclick="prepararEdicao(${t.id})" style="background: #eab308; padding: 5px 10px; border-radius: 4px; border:none; cursor:pointer; margin-right: 5px;">Editar</button>
@@ -100,6 +136,8 @@ function removerTarefa(id) {
 
 function prepararEdicao(id) {
     const t = tarefas.find(task => task.id === id);
+    if (!t) return;
+
     document.getElementById('nome').value = t.nome;
     document.getElementById('categoria').value = t.categoria;
     document.getElementById('descricao').value = t.descricao;
