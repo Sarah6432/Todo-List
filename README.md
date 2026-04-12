@@ -1,113 +1,91 @@
-📝 ZG-Hero: TODO List Java
+📝 ZG-Hero: TODO List
+Este projeto é uma aplicação de gerenciamento de tarefas desenvolvida como parte da Trilha dos Desafios do programa Acelera ZG. A solução evoluiu de uma ferramenta de terminal em Java para uma aplicação web completa com integração de serviços de e-mail.
 
-Este projeto é uma aplicação de gerenciamento de tarefas (Backend) desenvolvida como parte da trilha K1-T3 do programa Acelera ZG. A aplicação permite o gerenciamento completo de tarefas através do terminal, com foco em lógica de priorização e organização por categorias.
-👤 Sarah Silva Lima
+👤 Autor: Sarah Silva Lima
 
-🚀 Funcionalidades (MVP)
-
+🚀 Funcionalidades (MVP & Backend Java)
 O projeto atende aos seguintes requisitos obrigatórios:
 
-    CRUD de Tarefas: Criação, Listagem e Remoção de atividades.
+CRUD de Tarefas: Criação, Listagem, Edição e Remoção de atividades.
 
-    Parâmetros Completos: Cada tarefa possui Nome, Descrição, Data de Término, Prioridade (1-5), Categoria e Status.
+Parâmetros Completos: Cada tarefa possui Nome, Descrição, Data de Término, Prioridade (1-5), Categoria e Status.
 
-    Rebalanceamento Dinâmico: Ao inserir uma nova tarefa, a lista é automaticamente ordenada para que as tarefas de maior prioridade apareçam primeiro.
+Rebalanceamento Dinâmico: Ordenação automática para que as tarefas de maior prioridade apareçam primeiro.
 
-    Sistema de Filtros: Listagem personalizada por Categoria, Prioridade ou Status.
+Sistema de Filtros: Listagem personalizada por Categoria, Prioridade ou Status.
 
-    Menu Interativo: Interface via terminal simples e intuitiva.
+Menu Interativo: Interface via terminal simples e intuitiva.
 
- 🔔 Nova Atualização: Sistema de Alarmes (Challenge K1-T3)
+🔔 Sistema de Alarmes (Challenge K1-T3)
+Suporte a Horários Precisos: Utilização de LocalDateTime para configuração de hora exata.
 
-A aplicação agora conta com um sistema de notificações inteligente para auxiliar na gestão de prazos críticos
-📋 Novos Requisitos Implementados:
+Configuração de Alarme: Opção de ativar ou desativar notificações por tarefa.
 
-    Suporte a Horários Precisos: Substituição de LocalDate por LocalDateTime, permitindo configurar não apenas o dia, mas a hora exata do término da tarefa.
+Acionamento Automático: Varredura automática ao iniciar a aplicação.
 
-    Configuração de Alarme: Durante a criação de uma tarefa, o usuário pode optar por ativar ou desativar o alarme.
+Lógica de Antecedência: Disparo de alertas para tarefas com prazo nas próximas 2 horas.
 
-    Acionamento Automático: Ao iniciar a aplicação, o sistema realiza uma varredura automática em todas as tarefas pendentes.
+🧪 Testes e Qualidade
+Testes Unitários: Implementação com JUnit 5 para garantir a qualidade do CRUD.
 
-    Lógica de Antecedência: O alarme é disparado para qualquer tarefa que esteja configurada com alarme ativo e que tenha o prazo de término nas próximas 2 horas a partir do momento atual.
-    
-Nova Atualização:
-- **Testes Unitários:** Implementação de testes automatizados utilizando JUnit 5 para garantir a qualidade do CRUD.
-- **Metodologia TDD:** O recurso de edição foi desenvolvido seguindo o conceito de "Testes Primeiro".
-- **Padrão Given/When/Then:** Testes estruturados para melhor legibilidade do comportamento esperado.
+Metodologia TDD: Desenvolvimento da funcionalidade de edição guiado por testes.
 
-Nova Atualização: Frontend
---> o frontend está em html, css e javascript puros
---> conta com as funcionalidades básicas do todolist como o crud e possui um ux/ui funcional e intuitivo com cores calmas
+Padrão Given/When/Then: Estrutura de testes focada na legibilidade e comportamento.
 
-🚀 Novas Funcionalidades
-Nesta atualização, o projeto evoluiu de um CRUD básico para uma aplicação com persistência de dados e manipulação em lote:
+🌐 Frontend & Integrações Web
+O frontend foi desenvolvido com HTML, CSS e JavaScript puros, focando em uma experiência de usuário (UX) funcional e intuitiva.
 
-Persistência com LocalStorage: Todas as tarefas criadas, editadas ou excluídas são salvas automaticamente no localStorage do navegador. Isso garante que os dados do usuário não sejam perdidos ao atualizar a página ou fechar o navegador.
+🚀 Novas Funcionalidades Web
+Persistência com LocalStorage: Dados salvos automaticamente no navegador, evitando perda de informações ao fechar a página.
 
-Atualização de Status em Massa (Bulk Update): Implementação de uma nova funcionalidade que permite ao usuário selecionar múltiplas tarefas simultaneamente através de checkboxes. Após a seleção, é possível alterar o status de todos os itens marcados para TODO, DOING ou DONE com um único clique no botão "Executar".
+Atualização em Massa (Bulk Update): Seleção múltipla via checkboxes para alteração de status (TODO, DOING, DONE) de várias tarefas com um único clique.
 
-UX Aprimorada: A listagem agora conta com ordenação automática baseada no nível de prioridade (1 a 5), garantindo que as tarefas mais urgentes apareçam sempre no topo da lista.
+UX Aprimorada: Ordenação automática por prioridade no navegador e feedback visual de status.
 
-Feedback Visual: Adição de indicadores visuais para o status atual de cada tarefa e campos de formulário otimizados para dispositivos móveis e desktop.
+📧 Integração com Serviço de E-mail (Challenge K2-T3)
+EmailJS Integration: Integração com o serviço EmailJS para notificações em tempo real sem a necessidade de backend.
 
-## 🧪 Como Executar os Testes
+Notificação Dinâmica: Envio de e-mail de confirmação para o endereço informado pelo usuário no momento da criação da tarefa.
 
-Para garantir que todas as funcionalidades (Criar, Listar, Editar e Remover) estão operando corretamente:
+Alerta "Caso Sandubinha": Varredura automática que dispara um e-mail de alerta caso uma tarefa vença nas próximas 24 horas (dia anterior ao término).
 
-1. **Via IDE (VS Code / IntelliJ):**
-   - Navegue até a pasta `src/Test/main/`.
-   - Clique com o botão direito no arquivo `GerenciadorTarefasTest.java`.
-   - Selecione **"Run Test"**.
+Segurança (Token): Utilização de Public Key e Service IDs para evitar a exposição de credenciais SMTP no código-fonte.
 
-2. **Via Terminal (Maven):**
-   ```bash
-   mvn test
-⚙️ Detalhes Técnicos da Solução:
-
-    Cálculo de Intervalo: Utilização da classe java.time.Duration para calcular a diferença exata entre o horário do sistema e o horário da tarefa.
-
-    Verificação de Status: O alarme ignora tarefas marcadas como Done, focando apenas no que ainda precisa ser realizado (ToDo e Doing).
-
-    User Experience (Terminal): O aviso é exibido em destaque logo na primeira tela do programa, garantindo que o usuário veja as notificações antes de interagir com o menu.
+Feedback Visual: Notificações customizadas e elegantes integradas com a biblioteca SweetAlert2.
 
 🛠️ Tecnologias Utilizadas
+Linguagens: Java 21, JavaScript (ES6+), HTML5, CSS3.
 
-    Java 21
-    Java Collections API: Utilização de ArrayList para armazenamento.
+Backend: Java Collections API, Java Stream API, Java Time API.
 
-    Java Stream API: Filtros eficientes e manipulação de dados.
+Testes: JUnit 5, Maven.
 
-    Java Time API: Gerenciamento de datas com LocalDate.
+Integrações: EmailJS (E-mail Service), SweetAlert2 (UI Notifications).
 
-📋 Como Executar
-Pré-requisitos
+⚙️ Como Executar
+Frontend (Web)
+Abra o arquivo index.html em qualquer navegador moderno.
 
-    Java JDK instalado (versão 11 ou superior recomendada).
+Insira seu nome, e-mail e os dados da tarefa para receber as notificações.
 
-    Um terminal ou IDE (IntelliJ, VS Code, Eclipse).
+Backend (Java Terminal)
+Clone o repositório:
 
-Passo a Passo
+Bash
+git clone https://github.com/Sarah6432/Todo-List.git
+Compile e Execute:
 
-    Clone este repositório:
-    Bash
+Bash
+javac main.Main.java main.Tarefa.java
+java main.Main
+Executar Testes Unitários (Java)
+Via Terminal: mvn test
 
-    git clone https://github.com/Sarah6432/Todo-List.git
+Via IDE: Navegue até src/Test/main/GerenciadorTarefasTest.java e selecione Run Test.
 
-    Navegue até a pasta do projeto:
-    Bash
+🧠 Detalhes Técnicos
+Cálculo de Intervalo: Uso de java.time.Duration para precisão nos alarmes do sistema Java.
 
-    cd Todo-List
+Lógica de Rebalanceamento: Utilização do método sort com Comparator para garantir que o nível de criticidade (5 a 1) dite a ordem de exibição.
 
-    Compile os arquivos Java:
-    Bash
-
-    javac main.Main.java main.Tarefa.java
-
-    Execute a aplicação:
-    Bash
-
-    java main.Main
-
-🧠 Lógica de Rebalanceamento
-
-Para cumprir o requisito de rebalanceamento, foi utilizado o método sort da interface List combinado com um Comparator. A lógica garante que, independentemente da ordem de inserção, a exibição sempre priorize o nível de criticidade da tarefa (5 a 1).
+Persistência Frontend: Implementação de lógica para evitar disparos de e-mails duplicados utilizando flags de controle no LocalStorage.
