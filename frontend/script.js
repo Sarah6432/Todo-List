@@ -1,6 +1,10 @@
 let tarefas = JSON.parse(localStorage.getItem('tarefas_zg')) || [];
 let editandoId = null;
 
+const SERVICE_ID = 'service_x5vvtzo';
+const TEMPLATE_ID = 'template_0dm3vmp';
+const PUBLIC_KEY = 'Yt58mrB5LRKGBIsnM';
+
 const taskForm = document.getElementById('task-form');
 const taskContainer = document.getElementById('task-container');
 
@@ -9,10 +13,59 @@ function salvarNoStorage() {
     renderizar();
 }
 
+function enviarEmail(tarefa) {
+    const templateParams = {
+        to_email: tarefa.email,
+        task_name: tarefa.nome,
+        category: tarefa.categoria,
+        due_date: tarefa.dataHora.replace('T', ' às '),
+        description: tarefa.descricao || "Sem descrição informada."
+    };
+
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
+        .then((response) => {
+           Swal.fire({
+               title: 'E-mail Enviado!',
+               text: `Alerta enviado para ${tarefa.email}`,
+               icon: 'success',
+               background: '#1e293b',
+               color: '#f8fafc',
+               confirmButtonColor: '#8b5cf6',
+               timer: 2500
+           });
+        }, (error) => {
+           Swal.fire({
+               title: 'Erro de Conexão',
+               text: 'Houve um problema ao processar o e-mail.',
+               icon: 'error',
+               background: '#1e293b',
+               color: '#f8fafc',
+               confirmButtonColor: '#ef4444'
+           });
+        });
+}
+
+function verificarAlertasPrazo() {
+    const hoje = new Date();
+    const amanha = new Date(hoje);
+    amanha.setDate(hoje.getDate() + 1);
+    const amanhaStr = amanha.toISOString().split('T')[0];
+
+    tarefas.forEach(t => {
+        const dataTarefa = t.dataHora.split('T')[0];
+        if (dataTarefa === amanhaStr && !t.alertaEnviado) {
+            enviarEmail(t);
+            t.alertaEnviado = true;
+            localStorage.setItem('tarefas_zg', JSON.stringify(tarefas));
+        }
+    });
+}
+
 taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email_usuario').value.trim();
     const categoria = document.getElementById('categoria').value;
     const descricao = document.getElementById('descricao').value.trim();
     const dataHora = document.getElementById('dataHora').value;
@@ -25,38 +78,21 @@ taskForm.addEventListener('submit', (e) => {
     const regexData = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 
     if (!regexNome.test(nome)) {
-        alert("O nome da tarefa deve ter pelo menos 3 caracteres e não conter símbolos especiais.");
-        return;
-    }
-
-    if (!regexPrioridade.test(prioridadeStr)) {
-        alert("Prioridade inválida! Escolha um valor entre 1 e 5.");
-        return;
-    }
-
-    if (!regexData.test(dataHora)) {
-        alert("Por favor, selecione uma data e hora válidas.");
-        return;
-    }
-
-    const dataInserida = new Date(dataHora);
-    const agora = new Date();
-    agora.setSeconds(0, 0);
-
-    if (dataInserida < agora) {
-        alert("A data de término não pode ser menor que a atual!");
+        Swal.fire({ icon: 'warning', title: 'Nome inválido', background: '#1e293b', color: '#f8fafc' });
         return;
     }
 
     const tarefa = {
         id: editandoId || Date.now(),
         nome,
+        email,
         categoria,
         descricao,
         dataHora,
         prioridade: parseInt(prioridadeStr),
         status,
-        alarmes
+        alarmes,
+        alertaEnviado: false
     };
 
     if (editandoId) {
@@ -66,6 +102,7 @@ taskForm.addEventListener('submit', (e) => {
         document.getElementById('btn-cancel').classList.add('hidden');
     } else {
         tarefas.push(tarefa);
+        enviarEmail(tarefa);
     }
 
     taskForm.reset();
@@ -77,7 +114,7 @@ function executarAcaoEmMassa() {
     const novoStatus = document.getElementById('bulk-status').value;
 
     if (selecionados.length === 0) {
-        alert("Selecione ao menos uma tarefa!");
+        Swal.fire({ icon: 'info', title: 'Atenção', text: 'Selecione ao menos uma tarefa!', background: '#1e293b', color: '#f8fafc' });
         return;
     }
 
@@ -91,12 +128,10 @@ function executarAcaoEmMassa() {
     });
 
     salvarNoStorage();
-    alert("Status das tarefas selecionadas atualizado!");
 }
 
 function renderizar() {
     taskContainer.innerHTML = '';
-    
     const listaOrdenada = [...tarefas].sort((a, b) => b.prioridade - a.prioridade);
 
     listaOrdenada.forEach(t => {
@@ -128,10 +163,22 @@ function renderizar() {
 }
 
 function removerTarefa(id) {
-    if(confirm("Deseja excluir esta tarefa?")) {
-        tarefas = tarefas.filter(t => t.id !== id);
-        salvarNoStorage();
-    }
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: "Essa ação não pode ser desfeita!",
+        icon: 'warning',
+        showCancelButton: true,
+        background: '#1e293b',
+        color: '#f8fafc',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#475569',
+        confirmButtonText: 'Sim, excluir!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            tarefas = tarefas.filter(t => t.id !== id);
+            salvarNoStorage();
+        }
+    });
 }
 
 function prepararEdicao(id) {
@@ -139,6 +186,7 @@ function prepararEdicao(id) {
     if (!t) return;
 
     document.getElementById('nome').value = t.nome;
+    document.getElementById('email_usuario').value = t.email;
     document.getElementById('categoria').value = t.categoria;
     document.getElementById('descricao').value = t.descricao;
     document.getElementById('dataHora').value = t.dataHora;
@@ -160,3 +208,4 @@ document.getElementById('btn-cancel').addEventListener('click', () => {
 });
 
 renderizar();
+verificarAlertasPrazo();
