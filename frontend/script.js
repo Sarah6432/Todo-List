@@ -82,6 +82,16 @@ taskForm.addEventListener('submit', (e) => {
         return;
     }
 
+    if (!regexPrioridade.test(prioridadeStr)) {
+        Swal.fire({ icon: 'warning', title: 'Prioridade inválida', text: 'Informe um número entre 1 e 5.', background: '#1e293b', color: '#f8fafc' });
+        return;
+    }
+
+    if (!regexData.test(dataHora)) {
+        Swal.fire({ icon: 'warning', title: 'Data/Hora inválida', text: 'Use o formato correto.', background: '#1e293b', color: '#f8fafc' });
+        return;
+    }
+
     const tarefa = {
         id: editandoId || Date.now(),
         nome,
