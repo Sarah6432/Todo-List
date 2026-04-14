@@ -42,22 +42,6 @@ function salvarNoStorage() {
     renderizar();
 }
 
-function verificarAlertasPrazo() {
-    const hoje = new Date();
-    const amanha = new Date(hoje);
-    amanha.setDate(hoje.getDate() + 1);
-    const amanhaStr = amanha.toISOString().split('T')[0];
-
-    tarefas.forEach(t => {
-        const dataTarefa = t.dataHora.split('T')[0];
-        if (dataTarefa === amanhaStr && !t.alertaEnviado) {
-            enviarEmail(t);
-            t.alertaEnviado = true;
-            salvarTarefas(tarefas);
-        }
-    });
-}
-
 taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -174,4 +158,3 @@ window.removerTarefa = removerTarefa;
 window.executarAcaoEmMassa = executarAcaoEmMassa;
 
 renderizar();
-verificarAlertasPrazo();
