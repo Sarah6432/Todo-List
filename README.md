@@ -3,6 +3,19 @@ Este projeto é uma aplicação de gerenciamento de tarefas desenvolvida como pa
 
 👤 Autor: Sarah Silva Lima
 
+✨ Refatoração e Clean Code
+Recentemente, o projeto passou por uma "faxina" técnica para elevar o padrão de qualidade do código, aplicando princípios de Clean Code:
+
+Substituição de textos fixos por Enums (StatusTarefa), garantindo segurança em tempo de compilação e evitando erros de digitação.
+
+Princípio da Responsabilidade Única (SRP): A classe Main foi simplificada para focar apenas na interação com o usuário, enquanto a lógica de captura e validação de dados foi movida para métodos auxiliares.
+
+Tell, Don't Ask: A lógica de cálculo de tempo foi movida para dentro da classe Tarefa, permitindo que o objeto responda sobre seu próprio estado em vez de ter seus dados processados externamente.
+
+DRY (Don't Repeat Yourself): Centralização da lógica de entrada de dados para evitar repetição de código entre as funções de cadastro e edição.
+
+Testes Automatizados com Spock: Implementação de testes utilizando o framework Spock (Groovy), adotando o padrão BDD (Given/When/Then) para documentar o comportamento esperado do sistema.
+
 🚀 Funcionalidades (MVP & Backend Java)
 O projeto atende aos seguintes requisitos obrigatórios:
 
@@ -16,7 +29,7 @@ Sistema de Filtros: Listagem personalizada por Categoria, Prioridade ou Status.
 
 Menu Interativo: Interface via terminal simples e intuitiva.
 
-🔔 Sistema de Alarmes (Challenge K1-T3)
+🔔 Sistema de Alarmes
 Suporte a Horários Precisos: Utilização de LocalDateTime para configuração de hora exata.
 
 Configuração de Alarme: Opção de ativar ou desativar notificações por tarefa.
@@ -26,11 +39,11 @@ Acionamento Automático: Varredura automática ao iniciar a aplicação.
 Lógica de Antecedência: Disparo de alertas para tarefas com prazo nas próximas 2 horas.
 
 🧪 Testes e Qualidade
-Testes Unitários: Implementação com JUnit 5 para garantir a qualidade do CRUD.
+Testes Unitários: Implementação com JUnit 5 e Spock para garantir a qualidade do CRUD.
 
 Metodologia TDD: Desenvolvimento da funcionalidade de edição guiado por testes.
 
-Padrão Given/When/Then: Estrutura de testes focada na legibilidade e comportamento.
+Padrão BDD: Estrutura de testes focada na legibilidade e comportamento (Specification).
 
 🌐 Frontend & Integrações Web
 O frontend foi desenvolvido com HTML, CSS e JavaScript puros, focando em uma experiência de usuário (UX) funcional e intuitiva.
@@ -45,20 +58,20 @@ UX Aprimorada: Ordenação automática por prioridade no navegador e feedback vi
 📧 Integração com Serviço de E-mail (Challenge K2-T3)
 EmailJS Integration: Integração com o serviço EmailJS para notificações em tempo real sem a necessidade de backend.
 
-Notificação Dinâmica: Envio de e-mail de confirmação para o endereço informado pelo usuário no momento da criação da tarefa.
+Notificação Dinâmica: Envio de e-mail de confirmação para o endereço informado pelo usuário.
 
-Alerta "Caso Sandubinha": Varredura automática que dispara um e-mail de alerta caso uma tarefa vença nas próximas 24 horas (dia anterior ao término).
+Alerta "Caso Sandubinha": Varredura automática que dispara um e-mail de alerta caso uma tarefa vença nas próximas 24 horas.
 
 Segurança (Token): Utilização de Public Key e Service IDs para evitar a exposição de credenciais SMTP no código-fonte.
 
 Feedback Visual: Notificações customizadas e elegantes integradas com a biblioteca SweetAlert2.
 
 🛠️ Tecnologias Utilizadas
-Linguagens: Java 21, JavaScript (ES6+), HTML5, CSS3.
+Linguagens: Java 21, Groovy (Testes), JavaScript (ES6+), HTML5, CSS3.
 
 Backend: Java Collections API, Java Stream API, Java Time API.
 
-Testes: JUnit 5, Maven.
+Testes: JUnit 5, Spock Framework.
 
 Integrações: EmailJS (E-mail Service), SweetAlert2 (UI Notifications).
 
@@ -66,22 +79,18 @@ Integrações: EmailJS (E-mail Service), SweetAlert2 (UI Notifications).
 Frontend (Web)
 Abra o arquivo index.html em qualquer navegador moderno.
 
-Insira seu nome, e-mail e os dados da tarefa para receber as notificações.
-
 Backend (Java Terminal)
-Clone o repositório:
 
-Bash
+Clone o repositório:
 git clone https://github.com/Sarah6432/Todo-List.git
 Compile e Execute:
 
-Bash
-javac main.Main.java main.Tarefa.java
+Bash:
+javac main/Main.java main/Tarefa.java main/GerenciadorTarefas.java main/StatusTarefa.java
 java main.Main
-Executar Testes Unitários (Java)
-Via Terminal: mvn test
 
-Via IDE: Navegue até src/Test/main/GerenciadorTarefasTest.java e selecione Run Test.
+Executar Testes Unitários
+Via Terminal: mvn test ou ./gradlew test (dependendo do seu gerenciador de dependências).
 
 🧠 Detalhes Técnicos
 Cálculo de Intervalo: Uso de java.time.Duration para precisão nos alarmes do sistema Java.
