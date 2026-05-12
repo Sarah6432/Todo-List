@@ -1,19 +1,18 @@
 package main;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class GerenciadorTarefas {
-    private List<Tarefa> tarefas = new ArrayList<>();
-    private Set<String> alarmesDisparados = new HashSet<>();
+    private final List<Tarefa> tarefas = new ArrayList<>();
+    private final Set<String> alarmesDisparados = new HashSet<>();
 
-    public void adicionar(Tarefa t) {
-        tarefas.add(t);
-        rebalancear();
+    public void adicionar(Tarefa tarefa) {
+        tarefas.add(tarefa);
+        ordenarPorPrioridade();
     }
 
-    private void rebalancear() {
+    private void ordenarPorPrioridade() {
         tarefas.sort(Comparator.comparingInt(Tarefa::getPrioridade).reversed());
     }
 
@@ -22,48 +21,67 @@ public class GerenciadorTarefas {
     }
 
     public List<Tarefa> getTarefas() {
-        return tarefas;
+        return Collections.unmodifiableList(tarefas);
     }
 
     public void iniciarMonitoramento() {
-        Thread threadAlarme = new Thread(() -> {
-            while (true) {
-                LocalDateTime agora = LocalDateTime.now();
-                for (Tarefa t : tarefas) {
-                    if (!t.getStatus().equalsIgnoreCase("done")) {
-                        long minutosRestantes = Duration.between(agora, t.getDataHora()).toMinutes();
-
-                        for (Integer antecedencia : t.getAlarmesMinutos()) {
-                            String chaveAlarme = t.getNome() + "_" + antecedencia;
-
-                            if (minutosRestantes <= antecedencia && minutosRestantes > 0 && !alarmesDisparados.contains(chaveAlarme)) {
-                                System.out.println("\n[ALERTA] A tarefa '" + t.getNome() + "' expira em " + minutosRestantes + " minutos!");
-                                alarmesDisparados.add(chaveAlarme);
-                            }
-                        }
-                    }
-                }
-                try {
-                    Thread.sleep(30000);
-                } catch (InterruptedException e) {
-                    break;
-                }
-            }
-        });
+        Thread threadAlarme = new Thread(this::processarMonitoramento);
         threadAlarme.setDaemon(true);
         threadAlarme.start();
     }
 
+    private void processarMonitoramento() {
+        while (true) {
+            LocalDateTime agora = LocalDateTime.now();
+            tarefas.stream()
+                    .filter(t -> !t.estaConcluida())
+                    .forEach(t -> verificarEAlertar(t, agora));
+
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+    }
+
+    private void verificarEAlertar(Tarefa tarefa, LocalDateTime agora) {
+        long minutosRestantes = tarefa.calcularMinutosRestantes(agora);
+
+        for (Integer antecedencia : tarefa.getAlarmesMinutos()) {
+            String chaveAlarme = tarefa.getNome() + "_" + antecedencia;
+
+            if (deveDispararAlarme(minutosRestantes, antecedencia, chaveAlarme)) {
+                System.out.printf("%n[ALERTA] A tarefa '%s' expira em %d minutos!%n",
+                        tarefa.getNome(), minutosRestantes);
+                alarmesDisparados.add(chaveAlarme);
+            }
+        }
+    }
+
+    private boolean deveDispararAlarme(long minutosRestantes, int antecedencia, String chaveAlarme) {
+        return minutosRestantes <= antecedencia
+                && minutosRestantes > 0
+                && !alarmesDisparados.contains(chaveAlarme);
+    }
+
     public List<Tarefa> filtrar(int tipo, String busca) {
+        return tarefas.stream()
+                .filter(t -> atendeAoFiltro(t, tipo, busca))
+                .toList();
+    }
+
+    private boolean atendeAoFiltro(Tarefa t, int tipo, String busca) {
         return switch (tipo) {
-            case 1 -> tarefas.stream().filter(t -> t.getCategoria().equalsIgnoreCase(busca)).toList();
-            case 2 -> tarefas.stream().filter(t -> t.getStatus().equalsIgnoreCase(busca)).toList();
-            case 3 -> tarefas.stream().filter(t -> String.valueOf(t.getPrioridade()).equals(busca)).toList();
-            default -> tarefas;
+            case 1 -> t.getCategoria().equalsIgnoreCase(busca);
+            case 2 -> t.getStatus().name().equalsIgnoreCase(busca);
+            case 3 -> String.valueOf(t.getPrioridade()).equals(busca);
+            default -> true;
         };
     }
 
-    public boolean editar(String nome, String novaDesc, int novaPrio, String novaCat, String novoStatus, List<Integer> novosAlarmes) {
+    public boolean editar(String nome, String novaDesc, int novaPrio, String novaCat, StatusTarefa novoStatus, List<Integer> novosAlarmes) {
         for (Tarefa t : tarefas) {
             if (t.getNome().equalsIgnoreCase(nome)) {
                 t.setDescricao(novaDesc);
@@ -71,7 +89,7 @@ public class GerenciadorTarefas {
                 t.setCategoria(novaCat);
                 t.setStatus(novoStatus);
                 t.setAlarmesMinutos(novosAlarmes);
-                rebalancear();
+                ordenarPorPrioridade();
                 return true;
             }
         }

@@ -1,12 +1,14 @@
 package main;
+
 import java.util.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Main {
-    private static GerenciadorTarefas gerenciador = new GerenciadorTarefas();
-    private static Scanner scanner = new Scanner(System.in);
-    private static DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final GerenciadorTarefas gerenciador = new GerenciadorTarefas();
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final DateTimeFormatter FORMATADOR = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public static void main(String[] args) {
         gerenciador.iniciarMonitoramento();
@@ -16,60 +18,134 @@ public class Main {
             exibirMenu();
             try {
                 opcao = Integer.parseInt(scanner.nextLine());
-                switch (opcao) {
-                    case 1 -> cadastrar();
-                    case 2 -> listar(gerenciador.getTarefas());
-                    case 3 -> deletar();
-                    case 4 -> filtrar();
-                    case 0 -> System.out.println("Saindo...");
-                    default -> System.out.println("Opção inválida.");
-                }
-            } catch (Exception e) {
-                System.out.println("Erro na entrada: " + e.getMessage());
+                processarOpcao(opcao);
+            } catch (NumberFormatException e) {
+                System.out.println("Erro: Por favor, digite um número válido.");
             }
         }
     }
 
     private static void exibirMenu() {
-        System.out.println("\n1. Nova Tarefa | 2. Listar Tudo | 3. Remover | 4. Filtrar | 0. Sair");
+        System.out.println("\nGerenciador de Tarefas: ");
+        System.out.println("1. Nova Tarefa | 2. Listar Tudo | 3. Remover");
+        System.out.println("4. Filtrar    | 5. Editar      | 0. Sair");
         System.out.print("Escolha: ");
+    }
+
+    private static void processarOpcao(int opcao) {
+        switch (opcao) {
+            case 1 -> cadastrar();
+            case 2 -> listar(gerenciador.getTarefas());
+            case 3 -> deletar();
+            case 4 -> filtrar();
+            case 5 -> editarTarefa();
+            case 0 -> System.out.println("Saindo...");
+            default -> System.out.println("Opção inválida.");
+        }
     }
 
     private static void cadastrar() {
         try {
-            System.out.print("Nome: "); String nome = scanner.nextLine();
-            System.out.print("Descrição: "); String desc = scanner.nextLine();
-            System.out.print("Data/Hora (dd/MM/yyyy HH:mm): ");
-            LocalDateTime dh = LocalDateTime.parse(scanner.nextLine(), fmt);
-            System.out.print("Prioridade (1-5): "); int prio = Integer.parseInt(scanner.nextLine());
-            System.out.print("Categoria: "); String cat = scanner.nextLine();
-            System.out.print("Status (todo/doing/done): "); String status = scanner.nextLine();
+            System.out.print("Nome: ");
+            String nome = scanner.nextLine();
 
-            System.out.print("Antecedência dos alarmes em minutos (ex: 10, 15, 20 ou 0 para nenhum): ");
-            String inputAlarmes = scanner.nextLine();
-            List<Integer> alarmes = new ArrayList<>();
-            if (!inputAlarmes.equals("0")) {
-                for (String s : inputAlarmes.split(",")) {
-                    alarmes.add(Integer.parseInt(s.trim()));
-                }
-            }
+            String desc = pedirDescricao();
+            LocalDateTime dataHora = lerData();
+            int prio = pedirPrioridade();
+            String cat = pedirCategoria();
+            StatusTarefa status = lerStatus();
+            List<Integer> alarmes = lerAlarmes();
 
-            gerenciador.adicionar(new Tarefa(nome, desc, dh, prio, cat, status, alarmes));
-            System.out.println("Sucesso! Lista rebalanceada por prioridade.");
+            gerenciador.adicionar(new Tarefa(nome, desc, dataHora, prio, cat, status, alarmes));
+            System.out.println("Sucesso! Tarefa adicionada.");
+
+        } catch (DateTimeParseException e) {
+            System.out.println("Erro: Formato de data inválido.");
         } catch (Exception e) {
-            System.out.println("Erro ao cadastrar. Verifique os formatos de data e números.");
+            System.out.println("Erro ao cadastrar: " + e.getMessage());
         }
     }
 
+    private static void editarTarefa() {
+        System.out.print("Nome da tarefa que deseja editar: ");
+        String nome = scanner.nextLine();
+
+        try {
+            String desc = pedirDescricao();
+            int prio = pedirPrioridade();
+            String cat = pedirCategoria();
+            StatusTarefa status = lerStatus();
+            List<Integer> alarmes = lerAlarmes();
+
+            if (gerenciador.editar(nome, desc, prio, cat, status, alarmes)) {
+                System.out.println("Tarefa atualizada com sucesso!");
+            } else {
+                System.out.println("Erro: Tarefa não encontrada.");
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao editar: Dados inválidos.");
+        }
+    }
+
+    private static String pedirDescricao() {
+        System.out.print("Descrição: ");
+        return scanner.nextLine();
+    }
+
+    private static int pedirPrioridade() {
+        System.out.print("Prioridade (1-5): ");
+        return Integer.parseInt(scanner.nextLine());
+    }
+
+    private static String pedirCategoria() {
+        System.out.print("Categoria: ");
+        return scanner.nextLine();
+    }
+
+    private static LocalDateTime lerData() {
+        System.out.print("Data/Hora (dd/MM/yyyy HH:mm): ");
+        return LocalDateTime.parse(scanner.nextLine(), FORMATADOR);
+    }
+
+    private static StatusTarefa lerStatus() {
+        System.out.print("Status (TODO, DOING, DONE): ");
+        try {
+            return StatusTarefa.valueOf(scanner.nextLine().toUpperCase().trim());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Status inválido. Definindo como TODO por padrão.");
+            return StatusTarefa.TODO;
+        }
+    }
+
+    private static List<Integer> lerAlarmes() {
+        System.out.print("Antecedência dos alarmes em minutos (ex: 10, 20 ou 0 para nenhum): ");
+        String input = scanner.nextLine();
+
+        if (input.equals("0") || input.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        return Arrays.stream(input.split(","))
+                .map(s -> Integer.parseInt(s.trim()))
+                .toList();
+    }
+
     private static void listar(List<Tarefa> lista) {
-        if (lista.isEmpty()) System.out.println("Vazio.");
-        else lista.forEach(System.out::println);
+        if (lista.isEmpty()) {
+            System.out.println("Nenhuma tarefa encontrada.");
+        } else {
+            lista.forEach(System.out::println);
+        }
     }
 
     private static void deletar() {
         System.out.print("Nome da tarefa para remover: ");
-        if (gerenciador.remover(scanner.nextLine())) System.out.println("Removida.");
-        else System.out.println("Não encontrada.");
+        String nome = scanner.nextLine();
+        if (gerenciador.remover(nome)) {
+            System.out.println("Removida com sucesso.");
+        } else {
+            System.out.println("Tarefa não encontrada.");
+        }
     }
 
     private static void filtrar() {
@@ -80,7 +156,7 @@ public class Main {
             String busca = scanner.nextLine();
             listar(gerenciador.filtrar(tipo, busca));
         } catch (Exception e) {
-            System.out.println("Entrada inválida para filtro.");
+            System.out.println("Erro ao filtrar.");
         }
     }
 }

@@ -10,62 +10,63 @@ class GerenciadorTarefasSpec extends Specification {
     GerenciadorTarefas gerenciador = new GerenciadorTarefas()
 
     def "Deve criar uma nova tarefa com sucesso e configurar alarme"() {
-        given: "Um objeto Tarefa mockado simulando dados vindos do frontend"
-        def nome = "Estudar Java"
-        def descricao = "Revisar Spock Framework"
-        def data = LocalDateTime.now().plusDays(1)
-        def prioridade = 5
-        def categoria = "Estudos"
-        def status = "todo"
-        def alarmes = [60]
-        def novaTarefa = new Tarefa(nome, descricao, data, prioridade, categoria, status, alarmes)
+        given:
+        String nome = "Estudar Java"
+        String descricao = "Revisar Spock Framework"
+        LocalDateTime data = LocalDateTime.now().plusDays(1)
+        int prioridade = 5
+        String categoria = "Estudos"
+        StatusTarefa status = StatusTarefa.TODO
+        ArrayList<Integer> alarmes = [60]
+        Tarefa novaTarefa = new Tarefa(nome, descricao, data, prioridade, categoria, status, alarmes)
 
-        when: "O controlador solicita a adição da tarefa ao gerenciador"
+        when:
         gerenciador.adicionar(novaTarefa)
 
-        then: "A lista de tarefas deve conter exatamente 1 item com os dados corretos"
-        gerenciador.tarefas.size() == 1
-        gerenciador.tarefas[0].nome == "Estudar Java"
-        gerenciador.tarefas[0].alarmesMinutos[0] == 60
+        then:
+        gerenciador.getTarefas().size() == 1
+        gerenciador.getTarefas()[0].nome == "Estudar Java"
+        gerenciador.getTarefas()[0].status == StatusTarefa.TODO
+        gerenciador.getTarefas()[0].alarmesMinutos[0] == 60
     }
 
     def "Deve remover uma tarefa existente pelo nome"() {
-        given: "Que existe uma tarefa cadastrada"
-        gerenciador.adicionar(new Tarefa("Limpar Casa", "", LocalDateTime.now(), 1, "Casa", "todo", []))
+        given:
+        gerenciador.adicionar(new Tarefa("Limpar Casa", "", LocalDateTime.now(), 1, "Casa", StatusTarefa.TODO, []))
 
-        when: "O comando de remoção é enviado pelo cliente"
+        when:
         boolean removido = gerenciador.remover("Limpar Casa")
 
-        then: "O resultado deve ser verdadeiro e a lista deve ficar vazia"
+        then:
         removido
-        gerenciador.tarefas.size() == 0
+        gerenciador.getTarefas().size() == 0
     }
 
-    def "Deve editar os dados de uma tarefa e atualizar o status para 'done'"() {
-        given: "Uma tarefa inicial no sistema"
-        gerenciador.adicionar(new Tarefa("Academia", "Treino A", LocalDateTime.now(), 3, "Saúde", "todo", []))
+    def "Deve editar os dados de uma tarefa e atualizar o status para 'DONE'"() {
+        given:
+        gerenciador.adicionar(new Tarefa("Academia", "Treino A", LocalDateTime.now(), 3, "Saúde", StatusTarefa.TODO, []))
 
-        when: "O controller envia novos parâmetros para edição"
-        boolean editado = gerenciador.editar("Academia", "Treino A", 3, "Saúde", "done", [15])
+        when:
+        boolean editado = gerenciador.editar("Academia", "Treino A", 3, "Saúde", StatusTarefa.DONE, [15])
 
-        then: "A tarefa deve refletir as alterações mockadas"
+        then:
         editado
-        with(gerenciador.tarefas[0]) {
-            status == "done"
+        with(gerenciador.getTarefas()[0]) {
+            status == StatusTarefa.DONE
             alarmesMinutos[0] == 15
         }
     }
 
     def "Deve rebalancear a lista priorizando tarefas de nível mais alto"() {
-        given: "Dados de tarefas com diferentes prioridades"
-        def tarefaBaixa = new Tarefa("Baixa", "Desc", LocalDateTime.now(), 1, "Geral", "todo", [])
-        def tarefaAlta = new Tarefa("Alta", "Desc", LocalDateTime.now(), 5, "Geral", "todo", [])
+        given:
+        Tarefa tarefaBaixa = new Tarefa("Baixa", "Desc", LocalDateTime.now(), 1, "Geral", StatusTarefa.TODO, [])
+        Tarefa tarefaAlta = new Tarefa("Alta", "Desc", LocalDateTime.now(), 5, "Geral", StatusTarefa.TODO, [])
 
-        when: "As tarefas são adicionadas em qualquer ordem"
+        when:
         gerenciador.adicionar(tarefaBaixa)
         gerenciador.adicionar(tarefaAlta)
 
-        then: "A primeira tarefa da lista (topo) deve ser a de maior prioridade"
-        gerenciador.tarefas.first().nome == "Alta"
+        then:
+        gerenciador.getTarefas().first().nome == "Alta"
     }
 }
