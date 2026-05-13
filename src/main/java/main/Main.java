@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Main {
-    private static final GerenciadorTarefas gerenciador = new GerenciadorTarefas();
+    private static final GerenciadorTarefas gerenciador = new GerenciadorTarefas(new NotificadorView());
     private static final Scanner scanner = new Scanner(System.in);
     private static final DateTimeFormatter FORMATADOR = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 

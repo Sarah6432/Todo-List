@@ -6,10 +6,12 @@ import java.time.LocalDateTime
 
 class GerenciadorTarefasSpec extends Specification {
 
-    @Subject
-    GerenciadorTarefas gerenciador = new GerenciadorTarefas()
+    Notificador notificadorMock = Mock(Notificador)
 
-    def "Deve criar uma nova tarefa com sucesso e configurar alarme"() {
+    @Subject
+    GerenciadorTarefas gerenciador = new GerenciadorTarefas(notificadorMock)
+
+    void "Deve criar uma nova tarefa com sucesso e configurar alarme"() {
         given:
         String nome = "Estudar Java"
         String descricao = "Revisar Spock Framework"
@@ -30,7 +32,7 @@ class GerenciadorTarefasSpec extends Specification {
         gerenciador.getTarefas()[0].alarmesMinutos[0] == 60
     }
 
-    def "Deve remover uma tarefa existente pelo nome"() {
+    void "Deve remover uma tarefa existente pelo nome"() {
         given:
         gerenciador.adicionar(new Tarefa("Limpar Casa", "", LocalDateTime.now(), 1, "Casa", StatusTarefa.TODO, []))
 
@@ -42,7 +44,7 @@ class GerenciadorTarefasSpec extends Specification {
         gerenciador.getTarefas().size() == 0
     }
 
-    def "Deve editar os dados de uma tarefa e atualizar o status para 'DONE'"() {
+    void "Deve editar os dados de uma tarefa e atualizar o status para 'DONE'"() {
         given:
         gerenciador.adicionar(new Tarefa("Academia", "Treino A", LocalDateTime.now(), 3, "Saúde", StatusTarefa.TODO, []))
 
@@ -57,7 +59,7 @@ class GerenciadorTarefasSpec extends Specification {
         }
     }
 
-    def "Deve rebalancear a lista priorizando tarefas de nível mais alto"() {
+    void "Deve rebalancear a lista priorizando tarefas de nível mais alto"() {
         given:
         Tarefa tarefaBaixa = new Tarefa("Baixa", "Desc", LocalDateTime.now(), 1, "Geral", StatusTarefa.TODO, [])
         Tarefa tarefaAlta = new Tarefa("Alta", "Desc", LocalDateTime.now(), 5, "Geral", StatusTarefa.TODO, [])
@@ -68,5 +70,31 @@ class GerenciadorTarefasSpec extends Specification {
 
         then:
         gerenciador.getTarefas().first().nome == "Alta"
+    }
+
+    void "Deve acionar o notificador quando uma tarefa atinge o tempo de alerta"() {
+        given: "Uma tarefa que vence em 5 minutos com um alarme configurado para 10 minutos"
+        LocalDateTime agora = LocalDateTime.now()
+        LocalDateTime dataVencimento = agora.plusMinutes(5)
+
+        Tarefa tarefa = new Tarefa(
+                "Tarefa Teste",
+                "Desc",
+                dataVencimento,
+                3,
+                "Geral",
+                StatusTarefa.TODO,
+                [10]
+        )
+        gerenciador.adicionar(tarefa)
+
+        when: "O monitoramento processa a verificação"
+        gerenciador.verificarEAlertar(tarefa, agora)
+
+        then: "O método enviarAlerta do notificador DEVE ser chamado exatamente 1 vez"
+        1 * notificadorMock.enviarAlerta(_ as String)
+
+        and: "A tarefa deve ser marcada como notificada para não repetir o alarme"
+        gerenciador.alarmesDisparados.contains("Tarefa Teste_10")
     }
 }

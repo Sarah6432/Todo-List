@@ -6,6 +6,11 @@ import java.util.*;
 public class GerenciadorTarefas {
     private final List<Tarefa> tarefas = new ArrayList<>();
     private final Set<String> alarmesDisparados = new HashSet<>();
+    private final Notificador notificador;
+
+    public GerenciadorTarefas(Notificador notificador) {
+        this.notificador = notificador;
+    }
 
     public void adicionar(Tarefa tarefa) {
         tarefas.add(tarefa);
@@ -53,8 +58,7 @@ public class GerenciadorTarefas {
             String chaveAlarme = tarefa.getNome() + "_" + antecedencia;
 
             if (deveDispararAlarme(minutosRestantes, antecedencia, chaveAlarme)) {
-                System.out.printf("%n[ALERTA] A tarefa '%s' expira em %d minutos!%n",
-                        tarefa.getNome(), minutosRestantes);
+                notificador.enviarAlerta(String.format("A tarefa '%s' expira em %d minutos!", tarefa.getNome(), minutosRestantes));
                 alarmesDisparados.add(chaveAlarme);
             }
         }
