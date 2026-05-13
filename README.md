@@ -1,100 +1,84 @@
-📝 ZG-Hero: TODO List
+# 📝 ZG-Hero: TODO List
+
 Este projeto é uma aplicação de gerenciamento de tarefas desenvolvida como parte da Trilha dos Desafios do programa Acelera ZG. A solução evoluiu de uma ferramenta de terminal em Java para uma aplicação web completa com integração de serviços de e-mail.
 
-👤 Autor: Sarah Silva Lima
+**👤 Autor:** Sarah Silva Lima
 
-✨ Refatoração e Clean Code
-Recentemente, o projeto passou por uma "faxina" técnica para elevar o padrão de qualidade do código, aplicando princípios de Clean Code:
+---
 
-Substituição de textos fixos por Enums (StatusTarefa), garantindo segurança em tempo de compilação e evitando erros de digitação.
+## 🏗️ Implementação de Princípios SOLID
+O projeto foi refatorado para elevar o padrão arquitetural, focando nos princípios **SOLID** para garantir baixa acoplamento e alta coesão:
 
-Princípio da Responsabilidade Única (SRP): A classe Main foi simplificada para focar apenas na interação com o usuário, enquanto a lógica de captura e validação de dados foi movida para métodos auxiliares.
+* **S - Single Responsibility Principle (Responsabilidade Única):** A lógica de notificação foi extraída do `GerenciadorTarefas` para classes especializadas, garantindo que cada classe tenha apenas um motivo para mudar.
+* **O - Open/Closed Principle (Aberto/Fechado):** O sistema agora permite a adição de novos métodos de alerta (E-mail, SMS, Push) apenas criando novas implementações da interface, sem modificar o código central de monitoramento.
+* **D - Dependency Inversion Principle (Inversão de Dependência):** O `GerenciadorTarefas` não depende mais de implementações concretas. Ele depende da interface `Notificador`, que é injetada via construtor.
+* **Desacoplamento de Testes:** Graças à Inversão de Dependência, os testes unitários utilizam **Mocks** (objetos simulados) para validar se os alertas são disparados no tempo correto sem a necessidade de saídas físicas no console.
 
-Tell, Don't Ask: A lógica de cálculo de tempo foi movida para dentro da classe Tarefa, permitindo que o objeto responda sobre seu próprio estado em vez de ter seus dados processados externamente.
+---
 
-DRY (Don't Repeat Yourself): Centralização da lógica de entrada de dados para evitar repetição de código entre as funções de cadastro e edição.
+## ✨ Refatoração e Clean Code
+Além do SOLID, o código aplica as melhores práticas de **Clean Code**:
 
-Testes Automatizados com Spock: Implementação de testes utilizando o framework Spock (Groovy), adotando o padrão BDD (Given/When/Then) para documentar o comportamento esperado do sistema.
+* **Eliminação de Strings Mágicas:** Substituição de textos soltos pelo Enum `StatusTarefa`.
+* **Tell, Don't Ask:** A classe `Tarefa` é responsável por calcular seus próprios minutos restantes e validar seu estado de conclusão.
+* **Encapsulamento Defensivo:** Proteção da lista de tarefas com `Collections.unmodifiableList` e cópias defensivas em coleções mutáveis.
+* **DRY (Don't Repeat Yourself):** Reuso de lógica de entrada de dados (Scanner) através de métodos auxiliares na classe `Main`.
+* **Testes BDD com Spock:** Escrita de testes legíveis utilizando a estrutura *Given/When/Then*.
 
-🚀 Funcionalidades (MVP & Backend Java)
-O projeto atende aos seguintes requisitos obrigatórios:
+---
 
-CRUD de Tarefas: Criação, Listagem, Edição e Remoção de atividades.
+## 🚀 Funcionalidades (MVP & Backend Java)
+* **CRUD Completo:** Criação, Listagem, Edição e Remoção de atividades.
+* **Rebalanceamento Dinâmico:** Ordenação automática por prioridade (1-5).
+* **Sistema de Filtros:** Busca refinada por Categoria, Prioridade ou Status.
+* **Monitoramento de Alarmes:** Thread de background que verifica prazos e dispara alertas configuráveis.
 
-Parâmetros Completos: Cada tarefa possui Nome, Descrição, Data de Término, Prioridade (1-5), Categoria e Status.
+---
 
-Rebalanceamento Dinâmico: Ordenação automática para que as tarefas de maior prioridade apareçam primeiro.
+## 🌐 Frontend & Integrações Web
+Interface intuitiva desenvolvida com foco em UX e persistência de dados local.
 
-Sistema de Filtros: Listagem personalizada por Categoria, Prioridade ou Status.
+* **LocalStorage:** Persistência automática no navegador para evitar perda de dados.
+* **Bulk Update:** Seleção e atualização de status em massa para múltiplas tarefas.
+* **Integração EmailJS:** Notificações automáticas enviadas para o e-mail do usuário.
+* **Alerta "Caso Sandubinha":** Lógica preventiva que dispara e-mails para tarefas vencendo em 24h.
 
-Menu Interativo: Interface via terminal simples e intuitiva.
+---
 
-🔔 Sistema de Alarmes
-Suporte a Horários Precisos: Utilização de LocalDateTime para configuração de hora exata.
+## 🛠️ Tecnologias Utilizadas
+* **Linguagens:** Java 21, Groovy (Testes), JavaScript (ES6+), HTML5, CSS3.
+* **Backend:** Java Stream API, Time API, Collections.
+* **Testes:** JUnit 5, Spock Framework.
+* **Integrações:** EmailJS, SweetAlert2.
 
-Configuração de Alarme: Opção de ativar ou desativar notificações por tarefa.
+---
 
-Acionamento Automático: Varredura automática ao iniciar a aplicação.
+## ⚙️ Como Executar
 
-Lógica de Antecedência: Disparo de alertas para tarefas com prazo nas próximas 2 horas.
+### Frontend (Web)
+1. Abra o arquivo `index.html` em qualquer navegador moderno.
 
-🧪 Testes e Qualidade
-Testes Unitários: Implementação com JUnit 5 e Spock para garantir a qualidade do CRUD.
+### Backend (Java Terminal)
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/Sarah6432/Todo-List.git](https://github.com/Sarah6432/Todo-List.git)
+    ```
+2.  **Compile os arquivos:**
+    ```bash
+    javac main/Main.java main/Tarefa.java main/GerenciadorTarefas.java main/StatusTarefa.java main/Notificador.java main/ConsoleNotificador.java
+    ```
+3.  **Execute a aplicação:**
+    ```bash
+    java main.Main
+    ```
 
-Metodologia TDD: Desenvolvimento da funcionalidade de edição guiado por testes.
+### Executar Testes Unitários
+* Via Terminal: `mvn test` ou `./gradlew test` (dependendo do seu gerenciador).
+* Via IDE: Execute a classe `GerenciadorTarefasSolidSpec.groovy`.
 
-Padrão BDD: Estrutura de testes focada na legibilidade e comportamento (Specification).
+---
 
-🌐 Frontend & Integrações Web
-O frontend foi desenvolvido com HTML, CSS e JavaScript puros, focando em uma experiência de usuário (UX) funcional e intuitiva.
-
-🚀 Novas Funcionalidades Web
-Persistência com LocalStorage: Dados salvos automaticamente no navegador, evitando perda de informações ao fechar a página.
-
-Atualização em Massa (Bulk Update): Seleção múltipla via checkboxes para alteração de status (TODO, DOING, DONE) de várias tarefas com um único clique.
-
-UX Aprimorada: Ordenação automática por prioridade no navegador e feedback visual de status.
-
-📧 Integração com Serviço de E-mail (Challenge K2-T3)
-EmailJS Integration: Integração com o serviço EmailJS para notificações em tempo real sem a necessidade de backend.
-
-Notificação Dinâmica: Envio de e-mail de confirmação para o endereço informado pelo usuário.
-
-Alerta "Caso Sandubinha": Varredura automática que dispara um e-mail de alerta caso uma tarefa vença nas próximas 24 horas.
-
-Segurança (Token): Utilização de Public Key e Service IDs para evitar a exposição de credenciais SMTP no código-fonte.
-
-Feedback Visual: Notificações customizadas e elegantes integradas com a biblioteca SweetAlert2.
-
-🛠️ Tecnologias Utilizadas
-Linguagens: Java 21, Groovy (Testes), JavaScript (ES6+), HTML5, CSS3.
-
-Backend: Java Collections API, Java Stream API, Java Time API.
-
-Testes: JUnit 5, Spock Framework.
-
-Integrações: EmailJS (E-mail Service), SweetAlert2 (UI Notifications).
-
-⚙️ Como Executar
-Frontend (Web)
-Abra o arquivo index.html em qualquer navegador moderno.
-
-Backend (Java Terminal)
-
-Clone o repositório:
-git clone https://github.com/Sarah6432/Todo-List.git
-Compile e Execute:
-
-Bash:
-javac main/Main.java main/Tarefa.java main/GerenciadorTarefas.java main/StatusTarefa.java
-java main.Main
-
-Executar Testes Unitários
-Via Terminal: mvn test ou ./gradlew test (dependendo do seu gerenciador de dependências).
-
-🧠 Detalhes Técnicos
-Cálculo de Intervalo: Uso de java.time.Duration para precisão nos alarmes do sistema Java.
-
-Lógica de Rebalanceamento: Utilização do método sort com Comparator para garantir que o nível de criticidade (5 a 1) dite a ordem de exibição.
-
-Persistência Frontend: Implementação de lógica para evitar disparos de e-mails duplicados utilizando flags de controle no LocalStorage.
+## 🧠 Detalhes Técnicos
+* **Gestão de Tempo:** Uso de `java.time.Duration` para precisão milimétrica nos alarmes.
+* **Mocking:** Validação de comportamento entre objetos sem efeitos colaterais em ambiente de teste.
+* **Threads:** Implementação de `Daemon Thread` para monitoramento assíncrono.
