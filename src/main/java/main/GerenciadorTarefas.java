@@ -70,9 +70,9 @@ public class GerenciadorTarefas {
                 && !alarmesDisparados.contains(chaveAlarme);
     }
 
-    public List<Tarefa> filtrar(int tipo, String busca) {
+    public List<Tarefa> filtrar(FiltroStrategy estrategia, String busca) {
         return tarefas.stream()
-                .filter(t -> atendeAoFiltro(t, tipo, busca))
+                .filter(t -> estrategia.test(t, busca))
                 .toList();
     }
 

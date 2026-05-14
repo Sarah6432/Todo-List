@@ -84,6 +84,7 @@ public class Main {
             }
         } catch (Exception e) {
             System.out.println("Erro ao editar: Dados inválidos.");
+            e.printStackTrace();
         }
     }
 
@@ -113,6 +114,7 @@ public class Main {
             return StatusTarefa.valueOf(scanner.nextLine().toUpperCase().trim());
         } catch (IllegalArgumentException e) {
             System.out.println("Status inválido. Definindo como TODO por padrão.");
+            e.printStackTrace();
             return StatusTarefa.TODO;
         }
     }
@@ -154,9 +156,21 @@ public class Main {
             int tipo = Integer.parseInt(scanner.nextLine());
             System.out.print("Busca: ");
             String busca = scanner.nextLine();
-            listar(gerenciador.filtrar(tipo, busca));
+
+            FiltroStrategy estrategia = switch (tipo) {
+                case 1 -> new FiltroPorCategoria();
+                case 2 -> new FiltroPorStatus();
+                case 3 -> new FiltroPorPrioridade();
+                default -> null;
+            };
+
+            if (estrategia != null) {
+                listar(gerenciador.filtrar(estrategia, busca));
+            } else {
+                System.out.println("Opção de filtro inválida.");
+            }
         } catch (Exception e) {
-            System.out.println("Erro ao filtrar.");
+            e.printStackTrace();
         }
     }
 }
