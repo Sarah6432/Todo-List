@@ -1,6 +1,6 @@
-package main;
+package main.model;
 
-public class FiltroPorCategoria implements FiltroStrategy{
+public class FiltroPorCategoria implements FiltroStrategy {
     @Override
     public boolean test(Tarefa tarefa, String busca) {
         return tarefa.getCategoria().equalsIgnoreCase(busca);

@@ -1,6 +1,8 @@
-package main;
+package main.view;
 
-public class NotificadorView implements Notificador{
+import main.model.Notificador;
+
+public class NotificadorView implements Notificador {
     @Override
     public void enviarAlerta(String mensagem) {
         System.out.println("\n[ALERTA] " + mensagem);

@@ -1,5 +1,11 @@
 package main
 
+import main.controller.GerenciadorTarefas
+import main.model.FiltroPorCategoria
+import main.model.FiltroPorStatus
+import main.model.Notificador
+import main.model.StatusTarefa
+import main.model.Tarefa
 import spock.lang.Specification
 import spock.lang.Subject
 import java.time.LocalDateTime
@@ -97,4 +103,33 @@ class GerenciadorTarefasSpec extends Specification {
         and: "A tarefa deve ser marcada como notificada para não repetir o alarme"
         gerenciador.alarmesDisparados.contains("Tarefa Teste_10")
     }
+
+    void "Deve filtrar tarefas por categoria"() {
+        given:
+        LocalDateTime data = LocalDateTime.now()
+        gerenciador.adicionar(new Tarefa("Tarefa 1", "D", data, 1, "Trabalho", StatusTarefa.TODO, []))
+        gerenciador.adicionar(new Tarefa("Tarefa 2", "D", data, 1, "Pessoal", StatusTarefa.TODO, []))
+
+        when:
+        List<Tarefa> resultado = gerenciador.filtrar(new FiltroPorCategoria(), "Trabalho")
+
+        then:
+        resultado.size() == 1
+        resultado[0].categoria == "Trabalho"
+    }
+
+    void "Deve filtrar tarefas por status"() {
+        given:
+        LocalDateTime data = LocalDateTime.now()
+        gerenciador.adicionar(new Tarefa("T1", "D", data, 1, "G", StatusTarefa.TODO, []))
+        gerenciador.adicionar(new Tarefa("T2", "D", data, 1, "G", StatusTarefa.DONE, []))
+
+        when:
+        List<Tarefa> resultado = gerenciador.filtrar(new FiltroPorStatus(), "DONE")
+
+        then:
+        resultado.size() == 1
+        resultado[0].status == StatusTarefa.DONE
+    }
 }
+

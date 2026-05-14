@@ -1,4 +1,12 @@
-package main;
+package main.view;
+
+import main.controller.GerenciadorTarefas;
+import main.model.StatusTarefa;
+import main.model.Tarefa;
+import main.model.FiltroPorCategoria;
+import main.model.FiltroPorPrioridade;
+import main.model.FiltroPorStatus;
+import main.model.FiltroStrategy;
 
 import java.util.*;
 import java.time.LocalDateTime;

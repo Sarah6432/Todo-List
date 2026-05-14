@@ -1,5 +1,6 @@
-package main;
+package main.controller;
 
+import main.model.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -36,7 +37,7 @@ public class GerenciadorTarefas {
     }
 
     private void processarMonitoramento() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             LocalDateTime agora = LocalDateTime.now();
             tarefas.stream()
                     .filter(t -> !t.estaConcluida())
@@ -51,38 +52,28 @@ public class GerenciadorTarefas {
         }
     }
 
-    private void verificarEAlertar(Tarefa tarefa, LocalDateTime agora) {
+    public void verificarEAlertar(Tarefa tarefa, LocalDateTime agora) {
         long minutosRestantes = tarefa.calcularMinutosRestantes(agora);
 
         for (Integer antecedencia : tarefa.getAlarmesMinutos()) {
             String chaveAlarme = tarefa.getNome() + "_" + antecedencia;
 
             if (deveDispararAlarme(minutosRestantes, antecedencia, chaveAlarme)) {
-                notificador.enviarAlerta(String.format("A tarefa '%s' expira em %d minutos!", tarefa.getNome(), minutosRestantes));
+                notificador.enviarAlerta(String.format("A tarefa '%s' expira em %d minutos!",
+                        tarefa.getNome(), minutosRestantes));
                 alarmesDisparados.add(chaveAlarme);
             }
         }
     }
 
     private boolean deveDispararAlarme(long minutosRestantes, int antecedencia, String chaveAlarme) {
-        return minutosRestantes <= antecedencia
-                && minutosRestantes > 0
-                && !alarmesDisparados.contains(chaveAlarme);
+        return minutosRestantes <= antecedencia && minutosRestantes > 0 && !alarmesDisparados.contains(chaveAlarme);
     }
 
     public List<Tarefa> filtrar(FiltroStrategy estrategia, String busca) {
         return tarefas.stream()
                 .filter(t -> estrategia.test(t, busca))
                 .toList();
-    }
-
-    private boolean atendeAoFiltro(Tarefa t, int tipo, String busca) {
-        return switch (tipo) {
-            case 1 -> t.getCategoria().equalsIgnoreCase(busca);
-            case 2 -> t.getStatus().name().equalsIgnoreCase(busca);
-            case 3 -> String.valueOf(t.getPrioridade()).equals(busca);
-            default -> true;
-        };
     }
 
     public boolean editar(String nome, String novaDesc, int novaPrio, String novaCat, StatusTarefa novoStatus, List<Integer> novosAlarmes) {
