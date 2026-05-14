@@ -7,7 +7,7 @@ Este projeto é uma aplicação de gerenciamento de tarefas desenvolvida como pa
 ---
 
 ## 🏗️ Implementação de Princípios SOLID
-O projeto foi refatorado para elevar o padrão arquitetural, focando nos princípios **SOLID** para garantir baixa acoplamento e alta coesão:
+O projeto foi refatorado para elevar o padrão arquitetural, focando nos princípios **SOLID** para garantir baixo acoplamento e alta coesão:
 
 * **S - Single Responsibility Principle (Responsabilidade Única):** A lógica de notificação foi extraída do `GerenciadorTarefas` para classes especializadas, garantindo que cada classe tenha apenas um motivo para mudar.
 * **O - Open/Closed Principle (Aberto/Fechado):** O sistema agora permite a adição de novos métodos de alerta (E-mail, SMS, Push) apenas criando novas implementações da interface, sem modificar o código central de monitoramento.
@@ -16,8 +16,15 @@ O projeto foi refatorado para elevar o padrão arquitetural, focando nos princí
 
 ---
 
+## 🎨 Design Patterns Aplicados
+Para solucionar problemas de acoplamento e facilitar a expansão do software, foi aplicado o seguinte padrão:
+
+* **Strategy Pattern (Estratégia):** Implementado no sistema de filtros. O `GerenciadorTarefas` não possui mais uma lógica fixa de filtragem (switch-case). Em vez disso, ele recebe um objeto que implementa `FiltroStrategy` (ex: `FiltroPorCategoria`, `FiltroPorStatus`). Isso permite criar novos tipos de filtros sem nunca mais precisar alterar a classe de lógica principal.
+
+---
+
 ## ✨ Refatoração e Clean Code
-Além do SOLID, o código aplica as melhores práticas de **Clean Code**:
+Além do SOLID e Patterns, o código aplica as melhores práticas de **Clean Code**:
 
 * **Eliminação de Strings Mágicas:** Substituição de textos soltos pelo Enum `StatusTarefa`.
 * **Tell, Don't Ask:** A classe `Tarefa` é responsável por calcular seus próprios minutos restantes e validar seu estado de conclusão.
@@ -30,7 +37,7 @@ Além do SOLID, o código aplica as melhores práticas de **Clean Code**:
 ## 🚀 Funcionalidades (MVP & Backend Java)
 * **CRUD Completo:** Criação, Listagem, Edição e Remoção de atividades.
 * **Rebalanceamento Dinâmico:** Ordenação automática por prioridade (1-5).
-* **Sistema de Filtros:** Busca refinada por Categoria, Prioridade ou Status.
+* **Sistema de Filtros Especializado:** Busca refinada utilizando estratégias dinâmicas.
 * **Monitoramento de Alarmes:** Thread de background que verifica prazos e dispara alertas configuráveis.
 
 ---
@@ -39,7 +46,7 @@ Além do SOLID, o código aplica as melhores práticas de **Clean Code**:
 Interface intuitiva desenvolvida com foco em UX e persistência de dados local.
 
 * **LocalStorage:** Persistência automática no navegador para evitar perda de dados.
-* **Bulk Update:** Seleção e atualização de status em massa para múltiplas tarefas.
+* **Bulk Update:** Atualização de status em massa para múltiplas tarefas.
 * **Integração EmailJS:** Notificações automáticas enviadas para o e-mail do usuário.
 * **Alerta "Caso Sandubinha":** Lógica preventiva que dispara e-mails para tarefas vencendo em 24h.
 
@@ -63,9 +70,9 @@ Interface intuitiva desenvolvida com foco em UX e persistência de dados local.
     ```bash
     git clone [https://github.com/Sarah6432/Todo-List.git](https://github.com/Sarah6432/Todo-List.git)
     ```
-2.  **Compile os arquivos:**
+2.  **Compile os arquivos (incluindo as estratégias de filtro):**
     ```bash
-    javac main/Main.java main/Tarefa.java main/GerenciadorTarefas.java main/StatusTarefa.java main/Notificador.java main/ConsoleNotificador.java
+    javac main/*.java
     ```
 3.  **Execute a aplicação:**
     ```bash
@@ -73,12 +80,12 @@ Interface intuitiva desenvolvida com foco em UX e persistência de dados local.
     ```
 
 ### Executar Testes Unitários
-* Via Terminal: `mvn test` ou `./gradlew test` (dependendo do seu gerenciador).
-* Via IDE: Execute a classe `GerenciadorTarefasSolidSpec.groovy`.
+* Via Terminal: `mvn test` ou `./gradlew test`.
+* Via IDE: Execute a classe `GerenciadorTarefasSpec.groovy`.
 
 ---
 
 ## 🧠 Detalhes Técnicos
 * **Gestão de Tempo:** Uso de `java.time.Duration` para precisão milimétrica nos alarmes.
 * **Mocking:** Validação de comportamento entre objetos sem efeitos colaterais em ambiente de teste.
-* **Threads:** Implementação de `Daemon Thread` para monitoramento assíncrono.
+* **Polimorfismo:** Uso intensivo de interfaces para garantir que o sistema seja flexível e extensível.
